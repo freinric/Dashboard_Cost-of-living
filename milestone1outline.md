@@ -1,23 +1,27 @@
 # Milestone 1 - Dashboard proposal
 
-## 1. Submission Instructions
+## prework
+- [ ] Each group member explores possible datasets
+- [ ] meeting saturday to discuss and split off work, team work contract activity
+
+## Overview
+
+- [ ] Set up: GitHub issues, GitHub actions? 
+- [ ] <1000 proposal words (motivation, audience)
+- [ ] description of data (dataset and variables)
+- [ ] research questions and usage (questions, persona, user story)
+- [ ] app sketch (visual, 200-300 words)
+- [ ] team work contract, code of conduct, contribution guidelines
+
+## 1. Set up
 
 - [ ] Name your repo something memorable.
-- [ ] Use the same repo for Milestone 1 and 2 for your python Dashboard.
 - [x]  Pick a suitable licence. MIT and BSD-3 are common good options for open source projects. [The carpentries has a short primer on licenses](http://swcarpentry.github.io/git-novice/11-licensing/index.html) (optional read).
-- [ ]  You will submit your repos on Gradescope, as usual.
-
+- [ ]  submit your repos on Gradescope, as usual.
 - [ ]  Use GitHub issues to track features that you are planning to implement and bugs in the app.
 
-## 2. Proposal
+## 2. Proposal (<1000 words proposal.md)
 
-- [ ]  <1000 words proposal (proposal.md)
-- [ ]  sketch of app
-- [ ]  Motivation and purpose of your dashboard
-- [ ]  Expanded EDA: "cleaned up" and expanded EDA and description of the data
-- [ ]  Research question(s) you are exploring; you should aim to make these research questions compelling and substantial
-
-You will be assessed on the reasoning underlying your proposal as well as the quality and clarity of your writing.
 
 ### Section 1: Motivation and Purpose
 
@@ -27,14 +31,15 @@ You will be assessed on the reasoning underlying your proposal as well as the qu
 
 ### Section 2: Description of the data
 
+- [ ]  Expanded EDA: "cleaned up" and expanded EDA and description of the data
 - [ ]  You must use one of the datasets that was previously approved in Data 550 for this project
-- [ ]  briefly describe the dataset and the variables that you will visualize.
-- [ ] If you are planning to visualize a lot of columns, provide a high level descriptor of the variable types rather than listing every single column.
+- [ ]  briefly describe the dataset and the variables that you will visualize. (If you are planning to visualize a lot of columns, provide a high level descriptor of the variable types rather than listing every single column.)
 
 ### Section 3: Research questions and usage scenarios
 
-- [ ]  create a [brief persona description](https://mozilla.github.io/open-leadership-training-series/articles/building-communities-of-contributors/bring-on-contributors-using-personas-and-pathways/#personas) of a member in your intended target audience
-and write small user story for what they might do with your app.
+- [ ]  Research question(s) you are exploring
+- [ ]  [brief persona description](https://mozilla.github.io/open-leadership-training-series/articles/building-communities-of-contributors/bring-on-contributors-using-personas-and-pathways/#personas) of a member in your intended target audience
+- [ ]  write small user story for what they might do with your app.
 
 ## 3. Description of your app & sketch
 
