@@ -24,7 +24,8 @@ Other general criteria:
 - Public Green Areas Per Capita 
 
 **There are map and chart builder in the web, we may use it for proposal**   
-For example, Street Tree ![Street Tree](551dashplaceholder/street_tree_map.png) 
+For example, here is my draft dashboard
+![My Dashboard](draft_green_track.png) 
 
 
 
