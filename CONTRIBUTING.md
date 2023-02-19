@@ -28,7 +28,7 @@ Before you start to work on this project, please make sure you read through CODE
 
 ## Submitting Changes
 
-Please send a [GitHub Pull Request to 551dashplaceholder](https://github.com/freinric/551dashplaceholder) with a clear list of what you've done. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+Please send a [GitHub Pull Request to Cost-of-living_Dashboard](https://github.com/freinric/Cost-of-living_Dashboard) with a clear list of what you've done. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
