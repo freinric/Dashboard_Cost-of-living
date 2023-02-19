@@ -1,6 +1,12 @@
-## Proposal
+# Dataset Exploration
 
-Madison Brainstorming -
+## Ricky's Brainstorming
+
+
+## Sophie's Brainstorming
+
+
+## Madison's Brainstorming
 
 1 - forest fires in BC - interactive dashboard for past fires, and could be used for active fires during the fire season for BC residents
 *** conditional on if we learn how to do maps, because that would be the coolest feature - https://www2.gov.bc.ca/gov/content/safety/wildfire-status/about-bcws/wildfire-statistics
