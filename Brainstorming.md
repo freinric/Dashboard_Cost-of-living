@@ -1,6 +1,6 @@
 # Dataset Exploration
 
-## Ricky's Brainstorming (Chosen)
+## Ricky's Brainstorming
 ### Global Cost of Living
 Kaggle data scraped: https://www.kaggle.com/datasets/mvieira101/global-cost-of-living?select=cost-of-living_v2.csv
 
