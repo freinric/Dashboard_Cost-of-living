@@ -5,7 +5,7 @@ To start off, we want to ensure all team members know that they are in a safe, i
 If there are instances of **violations of the code of conduct**, or if one team member feels there has been an instance of **unacceptable behaviour**, we will meet as a group and discuss within ourselves, and if further action is needed, we shall report this to our TA and/or professor in exceptional circumstances.
 
 ## Meeting Norms
-- **How often will group meetings occur (here is a nice article on meetings)?**
+- **How often will group meetings occur?**
     - A few days before specific deadlines, on an ad hoc basis.
     - When there is an issue among team members.
 
