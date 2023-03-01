@@ -6,6 +6,7 @@ import altair as alt
 from vega_datasets import data
 import dash_bootstrap_components as dbc
 import pandas as pd
+from altair import datum
 
 data = pd.read_csv("data_extra.csv")
 
@@ -45,11 +46,11 @@ app.layout = dbc.Container([
                      dcc.Dropdown(
                                 id='xcol-widget3',
                                 value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in data.columns])],
-#                     dcc.Dropdown(
-#                         id='ycol-widget3',
-#                         value='Vancouver',  # REQUIRED to show the plot on the first page load
-#                         options=[{'label': cities, 'value': cities} for cities in data['city']], multi = True)], 
+                                options=[{'label': col, 'value': col} for col in data.columns]),
+                    dcc.Dropdown(
+                        id='ycol-widget3',
+                        value=['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
+                        options=[{'label': cities, 'value': cities} for cities in data['city']], multi = True)], 
             md = 4, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
             html.Iframe(
                 id='scatter3',
@@ -83,17 +84,15 @@ def plot_altair2(xcol, ycol):
 
 @app.callback(
     Output('scatter3', 'srcDoc'),
-    Input('xcol-widget3', 'value'))
-def plot_altair3(xcol):  # Still thinking how to select multiple ones from binding_select
-    dropdown_city = alt.binding_select(options=[None] + list(data['city'].unique()), labels = ['All'] + list(data['city'].unique()), name = "Cities")
-    selection_city = alt.selection_single(fields=['city'], bind=dropdown_city)
+    Input('xcol-widget3', 'value'),
+    Input('ycol-widget3', 'value')
+)
+def plot_altair3(xcol, ycol):  
 
     chart = alt.Chart(data).mark_bar().encode(
         x = alt.X(xcol, axis=alt.Axis(format='$')),
-        y = alt.Y('city', axis=alt.Axis(title = None))
-    ).add_selection(selection_city).transform_filter(
-        selection_city
-    )
+        y = alt.Y('city', axis=alt.Axis(title = None))).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=ycol))
+
     return chart.to_html()
 
 
