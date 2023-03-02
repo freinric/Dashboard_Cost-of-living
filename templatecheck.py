@@ -13,7 +13,7 @@ options = [x for x in df['province'].unique()]
 
 app.layout = html.Div(
     [
-        dcc.Checklist(["All"], [], id="all-checklist", inline=True),
+        dcc.Checklist(["Select all"], [], id="all-checklist", inline=True),
         dcc.Checklist(options, [], id="prov-checklist", inline=True),
     ]
 )
@@ -24,10 +24,14 @@ app.layout = html.Div(
     Input("all-checklist", "value"),
 )
 def sync_checklists(cities_selected, all_selected):
+    """
+    This will:
+    - select 'all' options when 'all' is chosen
+    - unselects 'all' when something is unchosen"""
     ctx = callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
     if input_id == "prov-checklist":
-        all_selected = ["All"] if set(cities_selected) == set(options) else []
+        all_selected = ["Select all"] if set(cities_selected) == set(options) else []
     else:
         cities_selected = options if all_selected else []
     return cities_selected, all_selected

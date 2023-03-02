@@ -5,7 +5,16 @@ import dash                                     # pip install dash
 from dash import dcc, html, Input, Output, callback_context
 import plotly.express as px
 
+### NEXT STEPS ###
+# get the select all boxes to work as intended
+
+# provinces?
+# https://gist.github.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44?short_path=2b4dce3
+# https://gist.github.com/jdylanmc/a3fd5ca8c960eaa4b4354445b4480dad?short_path=9a3cad4
+
 df = pd.read_csv("data_extra.csv")  # https://drive.google.com/file/d/1m63TNoZdDUtH5XhK-mc4kDFzO9j97eWW/view?usp=sharing
+provs = [x for x in df['province'].unique()]
+
 
 app = dash.Dash(__name__)
 #options = [{'label': x, 'value': x, 'disabled':False} for x in df['province'].unique()]
@@ -20,9 +29,9 @@ app.layout = html.Div([
         html.Div([
             dcc.Checklist(
                 id='prov_checklist',                      # used to identify component in callback
-                options=[
-                         {'label': x, 'value': x, 'disabled':False}
-                         for x in df['province'].unique()] + [{'label': 'Select all', 'value': 'all', 'disabled':False}],
+                options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
+                         [{'label': x, 'value': x, 'disabled':False}
+                         for x in df['province'].unique()],
                 value=['Alberta'],    # values chosen by default
 
                 className='my_box_container',           # class of the container (div)
@@ -49,9 +58,10 @@ app.layout = html.Div([
 
 #------------------------------------------------------------------------------
 
-
+### CALLBACK GRAPH AND CHECKBOXES ###
 @app.callback(
     Output(component_id='the_graph', component_property='figure'),
+    Output('prov_checklist', 'value'),
     [Input(component_id='prov_checklist', component_property='value')]
 )
 def update_graph(options_chosen):
@@ -66,9 +76,14 @@ def update_graph(options_chosen):
             values='population',
             names='province',
             )
-
-    return (piechart)
-
+    
+    if "all" in options_chosen and len(options_chosen) == 13: # only time everything is highlighted is when 'all', so if not, 'all' not highlighted
+        options_chosen.remove('all') # remove 'all' from list
+    elif "all" in options_chosen: # if 'all' is selected when
+        options_chosen = ["all"] + provs # make all highlight when 'all' is chosen
+    elif "all" not in options_chosen and len(options_chosen) == 13:
+        options_chosen = ["all"] + provs # highlight 'all' if everything else is highlighted
+    return (piechart), options_chosen
 
 
 #------------------------------------------------------------------------------
