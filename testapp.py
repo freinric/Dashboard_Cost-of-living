@@ -3,7 +3,7 @@ import datetime as dt
 import altair as alt
 
 import dash                                     # pip install dash
-from dash import dcc, html, Input, Output, callback_context
+from dash import dcc, html, Input, Output, html
 import plotly.express as px
 
 # provinces?
@@ -13,9 +13,15 @@ import plotly.express as px
 df = pd.read_csv("data_extra.csv")  # https://drive.google.com/file/d/1m63TNoZdDUtH5XhK-mc4kDFzO9j97eWW/view?usp=sharing
 provs = [x for x in df['province'].unique()]
 
+### PLOT BARCHART FUNCTION ###
+def plot_barchart(dff):
+    barchart = alt.Chart(dff[-pd.isnull(dff['milk_1L'])]).mark_bar().encode(
+    alt.X('milk_1L', title='Cost', axis=alt.Axis(orient='top',format='$')),
+    alt.Y('city', sort='x', title=""),
+    tooltip=['milk_1L','province'])
+    return barchart.to_html()
 
 app = dash.Dash(__name__)
-#options = [{'label': x, 'value': x, 'disabled':False} for x in df['province'].unique()]
 #------------------------------------------------------------------------------
 app.layout = html.Div([
 
@@ -32,6 +38,8 @@ app.layout = html.Div([
                          for x in df['province'].unique()],
                 value=['all'],    # values chosen by default
 
+
+                ### STYLES IN CHECKLIST ###
                 className='my_box_container',           # class of the container (div)
                 # style={'display':'flex'},             # style of the container (div)
 
@@ -49,7 +57,11 @@ app.layout = html.Div([
         ]),
 ### GRAPH ### 
         html.Div([
-            dcc.Graph(id='the_graph')
+            html.Iframe(
+                id='the_graph',
+                srcDoc=plot_barchart(df),
+                style={'border-width':'0', 'width':'100%','height':'400px'}
+            )
     ]),
 
 ])
@@ -58,30 +70,26 @@ app.layout = html.Div([
 
 ### CALLBACK GRAPH AND CHECKBOXES ###
 @app.callback(
-    Output(component_id='the_graph', component_property='figure'),
+    Output(component_id='the_graph', component_property='srcDoc'),
     Output('prov_checklist', 'value'),
     [Input(component_id='prov_checklist', component_property='value')]
 )
 def update_graph(options_chosen):
-    #print (dff['province'].unique()) # i think this prints in the terminal which are used, not useful
-    if "all" in options_chosen:
-        dff = df
-    else:
-        dff = df[df['province'].isin(options_chosen)] # new df of filtered by checklist
-        
-    piechart=px.pie(
-            data_frame=dff,
-            values='population',
-            names='province',
-            )
-    
-    if "all" in options_chosen and len(options_chosen) == 13: # only time everything is highlighted is when 'all', so if not, 'all' not highlighted
-        options_chosen.remove('all') # remove 'all' from list
-    elif "all" in options_chosen: # if 'all' is selected when
+
+    if "all" in options_chosen and len(options_chosen) == 13: # want 'all' only highlighted when len = 14
+        #only time everything is highlighted is when 'all', so if not, 'all' not highlighted
+        options_chosen.remove('all') # remove 'all' from list, unhighlight
+        dff = df[df['province'].isin(options_chosen)] # new df of filtered list
+    elif "all" in options_chosen: # if 'all' is selected
         options_chosen = ["all"] + provs # make all highlight when 'all' is chosen
-    elif "all" not in options_chosen and len(options_chosen) == 13:
+        dff = df # have all dataframe
+    elif "all" not in options_chosen and len(options_chosen) == 13: # if all provs are chosen, highlight 'all'
         options_chosen = ["all"] + provs # highlight 'all' if everything else is highlighted
-    return (piechart), options_chosen
+        dff = df
+    else: # in all other cases where not 'all'
+        dff = df[df['province'].isin(options_chosen)]
+    
+    return plot_barchart(dff), options_chosen
 
 
 #------------------------------------------------------------------------------
