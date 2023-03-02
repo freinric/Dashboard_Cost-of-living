@@ -5,9 +5,6 @@ import dash                                     # pip install dash
 from dash import dcc, html, Input, Output, callback_context
 import plotly.express as px
 
-### NEXT STEPS ###
-# get the select all boxes to work as intended
-
 # provinces?
 # https://gist.github.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44?short_path=2b4dce3
 # https://gist.github.com/jdylanmc/a3fd5ca8c960eaa4b4354445b4480dad?short_path=9a3cad4
