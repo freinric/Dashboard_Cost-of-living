@@ -12,46 +12,67 @@ data = pd.read_csv("data_extra.csv")
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+colors = {
+    'background': 'dark',
+    'background_dropdown': '#DDDDDD',
+    'H1':'#00BBFF',
+    'H3': '#7FDBFF'
+}
+
+style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
+
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
-            dbc.Card(dbc.CardBody([html.H1('Where do you want to live?'), html.H3('Cost of Living Dashboard')])), 
-            md = 4, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
+            dbc.Card(
+                dbc.CardBody([html.H1('Where do you want to live?', style={
+        'textAlign': 'center', 'color': colors['H1']}), html.H3('Cost of Living Dashboard', style={
+        'textAlign': 'center', 'color': colors['H3']})]), color = colors['background']), 
+            md = 3, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
         dbc.Col([
-            dbc.Col([html.H3('Rank Cities by'), dcc.Dropdown(
-                id='xcol-widget',
-                value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                options=[{'label': col, 'value': col} for col in data.columns])]),
-            html.Div(id='mean-x-div'),
+            dbc.Col([
+                html.H3('Rank Cities by', style = {'width': '100%'}), 
+                dcc.Dropdown(
+                    id='xcol-widget',
+                    placeholder="Variables",
+                    value='meal_cheap',  # REQUIRED to show the plot on the first page load
+                    options=[{'label': col, 'value': col} for col in data.columns], 
+                    style = style_dropdown)], 
+                    style = {'display': 'flex'}),
             html.Iframe(
                 id='scatter',
-                style={'border-width': '0', 'width': '100%', 'height': '400px'})]),
+                style={'border-width': '0', 'width': '100%', 'height': '970px'})], style={"height": "10%"}),
         dbc.Col([
-            dbc.Col([html.H3('Compare Variables'),
+            dbc.Col([html.H3('Compare'),
                      dcc.Dropdown(
                                 id='xcol-widget2',
                                 value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in data.columns]),
+                                options=[{'label': col, 'value': col} for col in data.columns], 
+                         style = style_dropdown),
+                     html.H3('and'),
                     dcc.Dropdown(
                         id='ycol-widget2',
                         value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                        options=[{'label': col, 'value': col} for col in data.columns])], 
-            md = 4, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
+                        options=[{'label': col, 'value': col} for col in data.columns], 
+                        style =style_dropdown)], 
+            style={'display':'flex'}),
             html.Iframe(
                 id='scatter2',
                 style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Br(),
             
-            dbc.Col([html.H3('Compare Variable for Cities'),
+            dbc.Col([html.H3('Compare'),
                      dcc.Dropdown(
                                 id='xcol-widget3',
                                 value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in data.columns]),
+                                options=[{'label': col, 'value': col} for col in data.columns], 
+                                style=style_dropdown),
+                     html.H3('among cities'),
                     dcc.Dropdown(
                         id='ycol-widget3',
                         value=['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
-                        options=[{'label': cities, 'value': cities} for cities in data['city']], multi = True)], 
-            md = 4, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
+                        options=[{'label': cities, 'value': cities} for cities in data['city']], multi = True)],
+                        style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
             html.Iframe(
                 id='scatter3',
                 style={'border-width': '0', 'width': '100%', 'height': '400px'})
@@ -61,14 +82,13 @@ app.layout = dbc.Container([
 ])
 @app.callback(
     Output('scatter', 'srcDoc'),
-    Output('mean-x-div', 'children'),
     Input('xcol-widget', 'value'))
-def plot_altair2(xcol):
+def plot_altair1(xcol):
     chart = alt.Chart(data).mark_bar().encode(
             x = alt.X(xcol, axis=alt.Axis(format='$', title=None, orient= 'top')),
             y = alt.Y('city', axis=alt.Axis(title = None), sort='x'),
-            tooltip=xcol)
-    return chart.to_html(), f'The mean of {xcol} is {round(data[xcol].mean(), 1)}'
+            tooltip=xcol).configure_axis(labelFontSize = 16)
+    return chart.to_html()
 
 @app.callback(
     Output('scatter2', 'srcDoc'),
@@ -76,10 +96,10 @@ def plot_altair2(xcol):
     Input('ycol-widget2', 'value'))
 def plot_altair2(xcol, ycol):
     chart = alt.Chart(data).mark_circle().encode(
-        x=xcol,
-        y=ycol,
+        x= alt.X(xcol, axis=alt.Axis(format='$')),
+        y=alt.Y(ycol, axis=alt.Axis(format='$')),
         tooltip=['city', xcol, ycol]
-    )
+    ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
 
 @app.callback(
@@ -90,8 +110,10 @@ def plot_altair2(xcol, ycol):
 def plot_altair3(xcol, ycol):  
 
     chart = alt.Chart(data).mark_bar().encode(
-        x = alt.X(xcol, axis=alt.Axis(format='$')),
-        y = alt.Y('city', axis=alt.Axis(title = None))).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=ycol))
+        x = alt.X(xcol, axis=alt.Axis(format='$', title = None)),
+        y = alt.Y('city', axis=alt.Axis(title = None))).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=ycol)).configure_axis(
+    labelFontSize = 16
+)
 
     return chart.to_html()
 
