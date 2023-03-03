@@ -29,7 +29,7 @@ app.layout = dbc.Container([
         'textAlign': 'center', 'color': colors['H1']}), html.H3('Cost of Living Dashboard', style={
         'textAlign': 'center', 'color': colors['H3']}),
         html.P("Select your maxiumum population: ", style={'textAlign': 'center', 'color': colors['H3']}),
-        dcc.Slider(id="population", min=0, max=4000000, value=0)
+        dcc.Slider(id="population", min=0, max=4000000, value=4000000)
         ]), color = colors['background']), 
             md = 3, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
         dbc.Col([
@@ -98,9 +98,11 @@ def plot_altair1(xcol, value):
 @app.callback(
     Output('scatter2', 'srcDoc'),
     Input('xcol-widget2', 'value'),
-    Input('ycol-widget2', 'value'))
-def plot_altair2(xcol, ycol):
-    chart = alt.Chart(data).mark_circle().encode(
+    Input('ycol-widget2', 'value'),
+    Input("population", "value"))
+def plot_altair2(xcol, ycol, value):
+    dataf = data.query(f"population <= {value}")
+    chart = alt.Chart(dataf).mark_circle().encode(
         x= alt.X(xcol, axis=alt.Axis(format='$')),
         y=alt.Y(ycol, axis=alt.Axis(format='$')),
         tooltip=['city', xcol, ycol]
@@ -110,11 +112,12 @@ def plot_altair2(xcol, ycol):
 @app.callback(
     Output('scatter3', 'srcDoc'),
     Input('xcol-widget3', 'value'),
-    Input('ycol-widget3', 'value')
+    Input('ycol-widget3', 'value'),
+    Input("population", "value")
 )
-def plot_altair3(xcol, ycol):  
-
-    chart = alt.Chart(data).mark_bar().encode(
+def plot_altair3(xcol, ycol, value):  
+    dataf = data.query(f"population <= {value}")
+    chart = alt.Chart(dataf).mark_bar().encode(
         x = alt.X(xcol, axis=alt.Axis(format='$', title = None)),
         y = alt.Y('city', axis=alt.Axis(title = None))).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=ycol)).configure_axis(
     labelFontSize = 16
