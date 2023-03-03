@@ -85,12 +85,14 @@ app.layout = dbc.Container([
 ])
 @app.callback(
     Output('scatter', 'srcDoc'),
-    Input('xcol-widget', 'value'))
-def plot_altair1(xcol):
-    chart = alt.Chart(data).mark_bar().encode(
+    Input('xcol-widget', 'value'),
+    Input("population", "value"))
+def plot_altair1(xcol, value):
+    dataf = data.query(f"population <= {value}")
+    chart = alt.Chart(dataf, ).mark_bar().encode(
             x = alt.X(xcol, axis=alt.Axis(format='$', title=None, orient= 'top')),
             y = alt.Y('city', axis=alt.Axis(title = None), sort='x'),
-            tooltip=xcol).configure_axis(labelFontSize = 16)
+            tooltip=xcol).properties(title = f"Cities with population up to {value}").configure_axis(labelFontSize = 16)
     return chart.to_html()
 
 @app.callback(
