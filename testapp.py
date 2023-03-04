@@ -71,7 +71,7 @@ app.layout = html.Div([
                 #persistence_type='',                   # stores user's changes to dropdown in memory ( I go over this in detail in Dropdown video: https://youtu.be/UYH_dNSX1DM )
             ),
             ### SLIDER ###
-            dcc.Slider(id="population", min=0, max=4000000, value=4000000)
+            dcc.RangeSlider(id="population", min=0, max=4000000, value=[0,4000000])
         ]),
 ### GRAPH ### 
         html.Div([
@@ -92,8 +92,10 @@ app.layout = html.Div([
     [Input(component_id='prov_checklist', component_property='value'),
      Input('population', 'value')]
 )
-def update_graph(options_chosen, population_chosen):
-    dff = df[df['population'] <= population_chosen]
+def update_df(options_chosen, population_chosen):
+    popmin = population_chosen[0]
+    popmax = population_chosen[1]
+    dff = df[df['population'].between(popmin, popmax)]
 
     if "all" in options_chosen and len(options_chosen) == 13: # want 'all' only highlighted when len = 14
         #only time everything is highlighted is when 'all', so if not, 'all' not highlighted
