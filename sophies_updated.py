@@ -39,6 +39,7 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Col([
                 html.H3('Rank Cities by', style = {'width': '100%'}), 
+                ### DROPDOWN 1 ###
                 dcc.Dropdown(
                     id='drop1',
                     placeholder="Variables",
