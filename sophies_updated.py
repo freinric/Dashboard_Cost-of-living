@@ -30,12 +30,15 @@ app.layout = dbc.Container([
                 dbc.CardBody([html.H1('Where do you want to live?', style={
         'textAlign': 'center', 'color': colors['H1']}), html.H3('Cost of Living Dashboard', style={
         'textAlign': 'center', 'color': colors['H3']}),
+        
+
         ### SLIDER ###
         html.P("Select your maxiumum population: ", style={'textAlign': 'center', 'color': colors['H3']}),
         dcc.Slider(id="population", min=0, max=4000000, value=4000000)
         ]), color = colors['background']), 
             md = 3, style={'border': '1px solid #d3d3d3', 'border-radius': '10px'}),
-        ### PLOT 1 ###    
+
+        ### PLOT 1 LAYOUT###    
         dbc.Col([
             dbc.Col([
                 html.H3('Rank Cities by', style = {'width': '100%'}), 
@@ -50,7 +53,8 @@ app.layout = dbc.Container([
             html.Iframe(
                 id='scatter',
                 style={'border-width': '0', 'width': '100%', 'height': '970px'})], style={"height": "10%"}),
-        ### PLOT 2 ###
+
+        ### PLOT 2  LAYOUT ###
         dbc.Col([
             dbc.Col([html.H3('Compare'),
                      dcc.Dropdown(
@@ -69,7 +73,8 @@ app.layout = dbc.Container([
                 id='scatter2',
                 style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Br(),
-            ### PLOT 3 ###
+
+            ### PLOT 3 LAYOUT ###
             dbc.Col([html.H3('Compare'),
                      dcc.Dropdown(
                                 id='drop3_a',
@@ -89,6 +94,7 @@ app.layout = dbc.Container([
         ])
         ])
 ])
+
 ### PLOT 1 ###
 @app.callback(
     Output('scatter', 'srcDoc'),

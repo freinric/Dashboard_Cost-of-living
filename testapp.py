@@ -66,27 +66,16 @@ app.layout = html.Div([
         html.Div([
             ### CHECKLIST ### 
             dcc.Checklist(
-                id='prov_checklist',                      # used to identify component in callback
+                id='prov_checklist',                
                 options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
                          [{'label': x, 'value': x, 'disabled':False}
                          for x in df['province'].unique()],
                 value=['all'],    # values chosen by default
 
-
                 ### STYLES IN CHECKLIST ###
-                className='my_box_container',           # class of the container (div)
-                # style={'display':'flex'},             # style of the container (div)
-
-                inputClassName='my_box_input',          # class of the <input> checkbox element
-                # inputStyle={'cursor':'pointer'},      # style of the <input> checkbox element
-
-                labelClassName='my_box_label',          # class of the <label> that wraps the checkbox input and the option's label
-                # labelStyle={'background':'#A5D6A7',   # style of the <label> that wraps the checkbox input and the option's label
-                #             'padding':'0.5rem 1rem',
-                #             'border-radius':'0.5rem'},
-
-                #persistence='',                        # stores user's changes to dropdown in memory ( I go over this in detail in Dropdown video: https://youtu.be/UYH_dNSX1DM )
-                #persistence_type='',                   # stores user's changes to dropdown in memory ( I go over this in detail in Dropdown video: https://youtu.be/UYH_dNSX1DM )
+                className='my_box_container', 
+                inputClassName='my_box_input',         
+                labelClassName='my_box_label',          
             ),
             ### SLIDER ###
             dcc.RangeSlider(id="population", min=0, max=4000000, value=[0,4000000]),
