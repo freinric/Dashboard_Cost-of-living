@@ -13,13 +13,28 @@ import plotly.express as px
 df = pd.read_csv("data_extra.csv")  # https://drive.google.com/file/d/1m63TNoZdDUtH5XhK-mc4kDFzO9j97eWW/view?usp=sharing
 provs = [x for x in df['province'].unique()]
 
-### PLOT BARCHART FUNCTION ###
-def plot_barchart(dff):
+### PLOT 1 FUNCTION ###
+def plot_altair1(dff):
     barchart = alt.Chart(dff[-pd.isnull(dff['milk_1L'])]).mark_bar().encode(
     alt.X('milk_1L', title='Cost', axis=alt.Axis(orient='top',format='$')),
     alt.Y('city', sort='x', title=""),
     tooltip=['milk_1L','province'])
     return barchart.to_html()
+
+### PLOT 2 FUNCTION ###
+"""@app.callback(
+    Output('scatter2', 'srcDoc'),
+    Input('drop2_a', 'value'),
+    Input('drop2_b', 'value'),
+    Input("population", "value"))
+def plot_altair2(drop_a, drop_b, value):
+    dataf = data.query(f"population <= {value}")
+    chart = alt.Chart(dataf).mark_circle().encode(
+        x= alt.X(drop_a, axis=alt.Axis(format='$')),
+        y=alt.Y(drop_b, axis=alt.Axis(format='$')),
+        tooltip=['city', drop_a, drop_b]
+    ).configure_axis(labelFontSize = 16, titleFontSize=20)
+    return chart.to_html()"""
 
 app = dash.Dash(__name__)
 #------------------------------------------------------------------------------
@@ -29,8 +44,9 @@ app.layout = html.Div([
             html.Pre(children= "Checklist",
             style={"text-align": "center", "font-size":"100%", "color":"black"})
         ]),
-### CHECKLIST ### 
+        
         html.Div([
+            ### CHECKLIST ### 
             dcc.Checklist(
                 id='prov_checklist',                      # used to identify component in callback
                 options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
@@ -54,42 +70,45 @@ app.layout = html.Div([
                 #persistence='',                        # stores user's changes to dropdown in memory ( I go over this in detail in Dropdown video: https://youtu.be/UYH_dNSX1DM )
                 #persistence_type='',                   # stores user's changes to dropdown in memory ( I go over this in detail in Dropdown video: https://youtu.be/UYH_dNSX1DM )
             ),
+            ### SLIDER ###
+            dcc.Slider(id="population", min=0, max=4000000, value=4000000)
         ]),
 ### GRAPH ### 
         html.Div([
             html.Iframe(
-                id='the_graph',
-                srcDoc=plot_barchart(df),
+                id='plot1',
+                srcDoc=plot_altair1(df),
                 style={'border-width':'0', 'width':'100%','height':'400px'}
             )
     ]),
-
 ])
 
 #------------------------------------------------------------------------------
 
-### CALLBACK GRAPH AND CHECKBOXES ###
+### CALLBACK GRAPHS AND CHECKBOXES ###
 @app.callback(
-    Output(component_id='the_graph', component_property='srcDoc'),
+    Output(component_id='plot1', component_property='srcDoc'),
     Output('prov_checklist', 'value'),
-    [Input(component_id='prov_checklist', component_property='value')]
+    [Input(component_id='prov_checklist', component_property='value'),
+     Input('population', 'value')]
 )
-def update_graph(options_chosen):
+def update_graph(options_chosen, population_chosen):
+    dff = df[df['population'] <= population_chosen]
 
     if "all" in options_chosen and len(options_chosen) == 13: # want 'all' only highlighted when len = 14
         #only time everything is highlighted is when 'all', so if not, 'all' not highlighted
         options_chosen.remove('all') # remove 'all' from list, unhighlight
-        dff = df[df['province'].isin(options_chosen)] # new df of filtered list
+        dff = dff[dff['province'].isin(options_chosen)] # new df of filtered list
     elif "all" in options_chosen: # if 'all' is selected
         options_chosen = ["all"] + provs # make all highlight when 'all' is chosen
-        dff = df # have all dataframe
+        dff = dff # have all dataframe
     elif "all" not in options_chosen and len(options_chosen) == 13: # if all provs are chosen, highlight 'all'
         options_chosen = ["all"] + provs # highlight 'all' if everything else is highlighted
-        dff = df
+        dff = dff
     else: # in all other cases where not 'all'
-        dff = df[df['province'].isin(options_chosen)]
+        dff = dff[dff['province'].isin(options_chosen)]
     
-    return plot_barchart(dff), options_chosen
+    return plot_altair1(dff), options_chosen
 
 
 #------------------------------------------------------------------------------
