@@ -11,8 +11,10 @@ import dash_bootstrap_components as dbc
 # https://gist.github.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44?short_path=2b4dce3
 # https://gist.github.com/jdylanmc/a3fd5ca8c960eaa4b4354445b4480dad?short_path=9a3cad4
 
+#------------------------------------------------------------------------------
+
 ### TABLE OF CONTENTS ###
-# DEFINING
+# DEFINING 'GLOBAL' VARIABLES
 # PLOT FUNCTIONS
 # APP LAYOUT
 # CALLBACK
@@ -40,17 +42,21 @@ def plot_altair1(dff, drop1_chosen):
     return barchart.to_html()
 
 ### PLOT 2 FUNCTION ###
-"""@app.callback(
-    Output('scatter2', 'srcDoc'),
-    Input('drop2_a', 'value'),
-    Input('drop2_b', 'value'),
-    Input("population", "value"))"""
 def plot_altair2(dff, drop_a, drop_b):
     chart = alt.Chart(dff).mark_circle().encode(
         x= alt.X(drop_a, axis=alt.Axis(format='$')),
         y=alt.Y(drop_b, axis=alt.Axis(format='$')),
         tooltip=['city', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
+    return chart.to_html()
+
+### PLOT 3 FUNCTION ###
+def plot_altair3(dff, drop_a, drop_b):  
+    chart = alt.Chart(dff).mark_bar().encode(
+        x = alt.X(drop_a, axis=alt.Axis(format='$', title = None)),
+        y = alt.Y('city', axis=alt.Axis(title = None))
+        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
+                           ).configure_axis(labelFontSize = 16)
     return chart.to_html()
 
 #------------------------------------------------------------------------------
@@ -155,7 +161,10 @@ app.layout = dbc.Container([
      Input('drop3_b', 'value'),
      ]
 )
-def update_df(options_chosen, population_chosen, drop1_chosen, drop2a_chosen, drop2b_chosen, drop3a_chosen, drop3b_chosen):
+def update_df(options_chosen, population_chosen, 
+              drop1_chosen, 
+              drop2a_chosen, drop2b_chosen, 
+              drop3a_chosen, drop3b_chosen):
 
     # filter by population
     popmin = population_chosen[0]
@@ -166,18 +175,21 @@ def update_df(options_chosen, population_chosen, drop1_chosen, drop2a_chosen, dr
     if "all" in options_chosen and len(options_chosen) == 13: # want 'all' only highlighted when len = 14
         options_chosen.remove('all') # remove 'all' from list, unhighlight
         dff = dff[dff['province'].isin(options_chosen)] # new df of filtered list
+
     elif "all" in options_chosen: # if 'all' is selected
         options_chosen = ["all"] + provs # make all highlight when 'all' is chosen
-        dff = dff # have all dataframe
+        #dff = dff # have all dataframe
+
     elif "all" not in options_chosen and len(options_chosen) == 13: # if all provs are chosen, highlight 'all'
         options_chosen = ["all"] + provs # highlight 'all' if everything else is highlighted
-        dff = dff
+        #dff = dff
+
     else: # in all other cases where not 'all'
         dff = dff[dff['province'].isin(options_chosen)]
 
     return (plot_altair1(dff, drop1_chosen), 
             plot_altair2(dff, drop2a_chosen, drop2b_chosen), 
-            plot_altair2(dff, drop2a_chosen, drop2b_chosen),
+            plot_altair3(dff, drop3a_chosen, drop3b_chosen),
             options_chosen)
 
 
