@@ -101,14 +101,16 @@ app.layout = dbc.Container([
             
             ### SLIDER ###
             html.H3("Select City Population: ", style = style_H3_c),
-            dcc.RangeSlider(id="population", min=0, max=2800000, step = None, marks={
-        0: '0°F',
-        3: '3°F',
-        5: '5°F',
-        7.65: '7.65°F',
-        10: '10°F'
-    }value=[0,2800000])], 
-            md = 3, style = style_card),
+            dcc.RangeSlider(id="population", min=0, max=2800000, step = 1000, 
+                            marks={100000: '100k',
+                                   500000: '500k',
+                                   1000000: '1M',
+                                   1500000: '1.5M',
+                                   2000000: '2M',
+                                   2500000: '2.5M',
+                                   3000000: '3M'},
+                            value=[0,2800000])], 
+                            md = 3, style = style_card),
              
         ### PLOT 1 LAYOUT###    
         dbc.Col([
