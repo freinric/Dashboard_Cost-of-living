@@ -121,7 +121,7 @@ app.layout = dbc.Container([
                     id='drop1',
                     placeholder="Variables",
                     value='meal_cheap',  
-                    options=[{'label': col, 'value': col} for col in df.columns], 
+                    options=[{'label': col, 'value': col} for col in df.columns[2:55]], # only including actual variables
                     style = style_dropdown)], 
                     style = {'display': 'flex'}),
                 html.Iframe(
@@ -134,14 +134,14 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare', style = style_H3),
                      dcc.Dropdown(
                                 id='drop2_a',
-                                value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in df.columns], 
+                                value='meal_cheap', 
+                                options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                          style = style_dropdown),
                      html.H3('and', style = style_H3),
                     dcc.Dropdown(
                         id='drop2_b',
-                        value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                        options=[{'label': col, 'value': col} for col in df.columns], 
+                        value='meal_cheap', 
+                        options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                         style =style_dropdown)], 
             style={'display':'flex'}),
             html.Iframe(
@@ -153,19 +153,18 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare', style = style_H3),
                      dcc.Dropdown(
                                 id='drop3_a',
-                                value='meal_mid',  # REQUIRED to show the plot on the first page load
+                                value='meal_mid', 
                                 options=[{'label': col, 'value': col} for col in df.columns], 
                                 style=style_dropdown),
                      html.H3('among Cities', style = style_H3),
-                    dcc.Dropdown(
+                     dcc.Dropdown(
                         id='drop3_b',
-                        value=['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
+                        value=['Vancouver', 'Toronto'], 
                         options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
-                        style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
+                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
             html.Iframe(
                 id='plot3',
                 style=style_plot3)
-            
         ])
         ])
 ])
@@ -178,6 +177,7 @@ app.layout = dbc.Container([
     Output(component_id='plot2', component_property='srcDoc'),
     Output(component_id='plot3', component_property='srcDoc'),
     Output('prov_checklist', 'value'),
+    Output('drop3_b', 'options'),
     [Input(component_id='prov_checklist', component_property='value'),
      Input('population', 'value'),
      Input('drop1', 'value'),
@@ -212,11 +212,15 @@ def update_df(options_chosen, population_chosen,
 
     else: # in all other cases where not 'all'
         dff = dff[dff['province'].isin(options_chosen)]
+    
+    # available cities according to provinces chosen
+    prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+    
 
     return (plot_altair1(dff, drop1_chosen), 
             plot_altair2(dff, drop2a_chosen, drop2b_chosen), 
             plot_altair3(dff, drop3a_chosen, drop3b_chosen),
-            options_chosen)
+            options_chosen, prov_cities)
 
 
 #------------------------------------------------------------------------------
