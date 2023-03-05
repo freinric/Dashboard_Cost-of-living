@@ -68,7 +68,7 @@ def plot_altair2(dff, drop_a, drop_b):
 def plot_altair3(dff, drop_a, drop_b):  
     chart = alt.Chart(dff).mark_bar().encode(
         x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
-        y = alt.Y('city', axis=alt.Axis(title = None))
+        y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
         ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
                            ).configure_axis(labelFontSize = 16)
     return chart.to_html()
