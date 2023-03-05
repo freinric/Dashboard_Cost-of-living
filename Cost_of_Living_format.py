@@ -50,7 +50,7 @@ style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 ### PLOT 1 FUNCTION ###
 def plot_altair1(dff, drop1_chosen):
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
-    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$')),
+    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html()
@@ -58,8 +58,8 @@ def plot_altair1(dff, drop1_chosen):
 ### PLOT 2 FUNCTION ###
 def plot_altair2(dff, drop_a, drop_b):
     chart = alt.Chart(dff).mark_circle().encode(
-        x= alt.X(drop_a, axis=alt.Axis(format='$')),
-        y=alt.Y(drop_b, axis=alt.Axis(format='$')),
+        x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
+        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
         tooltip=['city', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
@@ -67,7 +67,7 @@ def plot_altair2(dff, drop_a, drop_b):
 ### PLOT 3 FUNCTION ###
 def plot_altair3(dff, drop_a, drop_b):  
     chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$', title = None)),
+        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
         y = alt.Y('city', axis=alt.Axis(title = None))
         ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
                            ).configure_axis(labelFontSize = 16)
