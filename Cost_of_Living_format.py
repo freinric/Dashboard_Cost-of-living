@@ -31,12 +31,14 @@ colors = {
     'H2':'#7FDBFF',
     'H3':'#005AB5'
 }
-style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
+style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold', 'textAlign': 'left'}
+
+style_dropdown_multi = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}
 
 style_H1 = {'textAlign': 'center', 'color': colors['H1']} # Title
 style_H2 = {'textAlign': 'center', 'color': colors['H2']} # Subtitle
-style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%'} # For card
-style_H3 = {'color': colors['H3'], 'width': '100%'} # For Charts Title
+style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%', 'margin-right': '0'} # Position: Center
+style_H3 = {'color': colors['H3'], 'width': '100%', 'margin-right': '0'} # Position: left
 
 style_plot1 = {'border-width': '0', 'width': '100%', 'height': '970px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
@@ -48,26 +50,26 @@ style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 ### PLOT 1 FUNCTION ###
 def plot_altair1(dff, drop1_chosen):
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
-    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$')),
-    alt.Y('city', sort='x', title=""),
-    tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
+    alt.X(drop1_chosen, title = 'Cost of '+ drop1_chosen, axis = alt.Axis(orient='top',format='$')),
+    alt.Y('city', sort = 'x', title = ""),
+    tooltip = [drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html()
 
 ### PLOT 2 FUNCTION ###
 def plot_altair2(dff, drop_a, drop_b):
     chart = alt.Chart(dff).mark_circle().encode(
-        x= alt.X(drop_a, axis=alt.Axis(format='$')),
-        y=alt.Y(drop_b, axis=alt.Axis(format='$')),
-        tooltip=['city', drop_a, drop_b]
-    ).configure_axis(labelFontSize = 16, titleFontSize=20)
+        x = alt.X(drop_a, axis = alt.Axis(format = '$')),
+        y = alt.Y(drop_b, axis = alt.Axis(format = '$')),
+        tooltip = ['city', drop_a, drop_b]
+    ).configure_axis(labelFontSize = 16, titleFontSize = 20)
     return chart.to_html()
 
 ### PLOT 3 FUNCTION ###
 def plot_altair3(dff, drop_a, drop_b):  
     chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$', title = None)),
-        y = alt.Y('city', axis=alt.Axis(title = None))
-        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
+        x = alt.X(drop_a, axis = alt.Axis(format ='$', title = None)),
+        y = alt.Y('city', axis = alt.Axis(title = None))
+        ).transform_filter(alt.FieldOneOfPredicate(field ='city', oneOf=drop_b)
                            ).configure_axis(labelFontSize = 16)
     return chart.to_html()
 
@@ -86,16 +88,16 @@ app.layout = dbc.Container([
             ### CHECKLIST ###
             html.H3("Select the Province: ", style = style_H3_c),
             dcc.Checklist(
-                    id='prov_checklist',                
-                    options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
+                    id = 'prov_checklist',                
+                    options = [{'label': 'Select all', 'value': 'all', 'disabled':False}] +
                              [{'label': x, 'value': x, 'disabled':False}
                              for x in df['province'].unique()],
-                    value=['all'],    # values chosen by default
+                    value = ['all'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
-                    className='my_box_container', 
-                    inputClassName='my_box_input',         
-                    labelClassName='my_box_label',          
+                    className = 'my_box_container', 
+                    inputClassName = 'my_box_input',         
+                    labelClassName = 'my_box_label',          
                 ),
             html.Br(),
             
@@ -107,53 +109,53 @@ app.layout = dbc.Container([
         ### PLOT 1 LAYOUT###    
         dbc.Col([
             dbc.Col([
-                html.H3('Rank Cities by', style = style_H3), 
+                html.H3('Rank Cities by', style = style_H3_c), 
                 ### DROPDOWN 1 ###
                 dcc.Dropdown(
-                    id='drop1',
-                    placeholder="Variables",
-                    value='meal_cheap',  
-                    options=[{'label': col, 'value': col} for col in df.columns], 
+                    id = 'drop1',
+                    placeholder = "Variables",
+                    value = 'meal_cheap',  
+                    options = [{'label': col, 'value': col} for col in df.columns], 
                     style = style_dropdown)], 
                     style = {'display': 'flex'}),
                 html.Iframe(
-                    id='plot1',
+                    id = 'plot1',
                     style = style_plot1)], 
-            style={"height": "10%"}),
+            style = {"height": "10%"}),
 
         ### PLOT 2  LAYOUT ###
         dbc.Col([
             dbc.Col([html.H3('Compare', style = style_H3),
                      dcc.Dropdown(
-                                id='drop2_a',
-                                value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in df.columns], 
+                                id = 'drop2_a',
+                                value = 'meal_cheap',  # REQUIRED to show the plot on the first page load
+                                options = [{'label': col, 'value': col} for col in df.columns], 
                          style = style_dropdown),
-                     html.H3('and', style = style_H3),
+                     html.H3('and', style = style_H3_c),
                     dcc.Dropdown(
-                        id='drop2_b',
-                        value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                        options=[{'label': col, 'value': col} for col in df.columns], 
-                        style =style_dropdown)], 
-            style={'display':'flex'}),
+                        id = 'drop2_b',
+                        value = 'meal_cheap',  # REQUIRED to show the plot on the first page load
+                        options = [{'label': col, 'value': col} for col in df.columns], 
+                        style = style_dropdown)], 
+            style = {'display':'flex'}),
             html.Iframe(
-                id='plot2',
+                id = 'plot2',
                 style = style_plot2),
             html.Br(),
             
             ### PLOT 3 LAYOUT ###
             dbc.Col([html.H3('Compare', style = style_H3),
                      dcc.Dropdown(
-                                id='drop3_a',
-                                value='meal_mid',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in df.columns], 
-                                style=style_dropdown),
+                                id = 'drop3_a',
+                                value = 'meal_mid',  # REQUIRED to show the plot on the first page load
+                                options = [{'label': col, 'value': col} for col in df.columns], 
+                                style = style_dropdown),
                      html.H3('among Cities', style = style_H3),
                     dcc.Dropdown(
-                        id='drop3_b',
-                        value=['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
-                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
-                        style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
+                        id = 'drop3_b',
+                        value = ['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
+                        options = [{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
+                        style = style_dropdown_multi),
             html.Iframe(
                 id='plot3',
                 style=style_plot3)
