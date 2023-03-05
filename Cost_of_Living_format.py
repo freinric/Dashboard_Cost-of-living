@@ -97,7 +97,8 @@ app.layout = dbc.Container([
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
                     inputClassName='my_box_input',         
-                    labelClassName='my_box_label',          
+                    labelClassName='my_box_label', 
+                    inputStyle={"margin-right": "3px", "margin-left":"20px"},         
                 ),
             html.Br(),
             
