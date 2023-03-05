@@ -31,6 +31,8 @@ colors = {
     'H2':'#7FDBFF',
     'H3':'#005AB5'
 }
+
+
 style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
 
 style_H1 = {'textAlign': 'center', 'color': colors['H1']} # Title
@@ -131,16 +133,16 @@ app.layout = dbc.Container([
 
         ### PLOT 2  LAYOUT ###
         dbc.Col([
-            dbc.Col([html.H3('Compare', style = style_H3),
+            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
                      dcc.Dropdown(
                                 id='drop2_a',
                                 value='meal_cheap', 
                                 options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                          style = style_dropdown),
-                     html.H3('and', style = style_H3),
+                     html.H3('and ', style  = {'color': colors['H3']}),
                     dcc.Dropdown(
                         id='drop2_b',
-                        value='meal_cheap', 
+                        value='meal_mid', 
                         options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                         style =style_dropdown)], 
             style={'display':'flex'}),
