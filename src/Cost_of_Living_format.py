@@ -21,7 +21,7 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("data.csv")  
+df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 colors = {
@@ -91,7 +91,7 @@ app.layout = dbc.Container([
                     id='prov_checklist',                
                     options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
                              [{'label': x, 'value': x, 'disabled':False}
-                             for x in df['province'].unique()],
+                             for x in provs],
                     value=['all'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###

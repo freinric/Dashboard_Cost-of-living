@@ -7,5 +7,6 @@ Stretch goals:
 - adding a plot to compare many specific variables for many specific cities (scatterplot, or bubble chart)
 - adding a map of Canada which interactively shows city locations
 
-![dashBoard](AppSketch.png "App Sketch")
+![dashBoard](reports/AppSketch.png "App Sketch")
 Pleae find our app on Heroku: [Cost-of-living_Dashboard](https://cost-of-living.herokuapp.com/)
+
