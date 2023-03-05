@@ -157,7 +157,7 @@ app.layout = dbc.Container([
                      dcc.Dropdown(
                                 id='drop3_a',
                                 value='meal_mid', 
-                                options=[{'label': col, 'value': col} for col in df.columns], 
+                                options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                                 style=style_dropdown),
                      html.H3('among Cities', style = style_H3),
                      dcc.Dropdown(
