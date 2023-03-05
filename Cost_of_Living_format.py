@@ -21,7 +21,7 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("data_extra.csv")  
+df = pd.read_csv("data.csv")  
 provs = [x for x in df['province'].unique()]
 
 colors = {
@@ -31,6 +31,8 @@ colors = {
     'H2':'#7FDBFF',
     'H3':'#005AB5'
 }
+
+
 style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
 
 style_H1 = {'textAlign': 'center', 'color': colors['H1']} # Title
@@ -48,7 +50,7 @@ style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 ### PLOT 1 FUNCTION ###
 def plot_altair1(dff, drop1_chosen):
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
-    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$')),
+    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html()
@@ -56,8 +58,8 @@ def plot_altair1(dff, drop1_chosen):
 ### PLOT 2 FUNCTION ###
 def plot_altair2(dff, drop_a, drop_b):
     chart = alt.Chart(dff).mark_circle().encode(
-        x= alt.X(drop_a, axis=alt.Axis(format='$')),
-        y=alt.Y(drop_b, axis=alt.Axis(format='$')),
+        x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
+        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
         tooltip=['city', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
@@ -65,7 +67,7 @@ def plot_altair2(dff, drop_a, drop_b):
 ### PLOT 3 FUNCTION ###
 def plot_altair3(dff, drop_a, drop_b):  
     chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$', title = None)),
+        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
         y = alt.Y('city', axis=alt.Axis(title = None))
         ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
                            ).configure_axis(labelFontSize = 16)
@@ -95,14 +97,23 @@ app.layout = dbc.Container([
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
                     inputClassName='my_box_input',         
-                    labelClassName='my_box_label',          
+                    labelClassName='my_box_label', 
+                    inputStyle={"margin-right": "3px", "margin-left":"20px"},         
                 ),
             html.Br(),
             
             ### SLIDER ###
             html.H3("Select City Population: ", style = style_H3_c),
-            dcc.RangeSlider(id="population", min=0, max=4000000, value=[0,4000000])], 
-            md = 3, style = style_card),
+            dcc.RangeSlider(id="population", min=0, max=2800000, step = 1000, 
+                            marks={100000: '100k',
+                                   500000: '500k',
+                                   1000000: '1M',
+                                   1500000: '1.5M',
+                                   2000000: '2M',
+                                   2500000: '2.5M',
+                                   3000000: '3M'},
+                            value=[0,2800000])], 
+                            md = 3, style = style_card),
              
         ### PLOT 1 LAYOUT###    
         dbc.Col([
@@ -113,7 +124,7 @@ app.layout = dbc.Container([
                     id='drop1',
                     placeholder="Variables",
                     value='meal_cheap',  
-                    options=[{'label': col, 'value': col} for col in df.columns], 
+                    options=[{'label': col, 'value': col} for col in df.columns[2:55]], # only including actual variables
                     style = style_dropdown)], 
                     style = {'display': 'flex'}),
                 html.Iframe(
@@ -123,17 +134,17 @@ app.layout = dbc.Container([
 
         ### PLOT 2  LAYOUT ###
         dbc.Col([
-            dbc.Col([html.H3('Compare', style = style_H3),
+            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
                      dcc.Dropdown(
                                 id='drop2_a',
-                                value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                                options=[{'label': col, 'value': col} for col in df.columns], 
+                                value='meal_cheap', 
+                                options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                          style = style_dropdown),
-                     html.H3('and', style = style_H3),
+                     html.H3('and ', style  = {'color': colors['H3']}),
                     dcc.Dropdown(
                         id='drop2_b',
-                        value='meal_cheap',  # REQUIRED to show the plot on the first page load
-                        options=[{'label': col, 'value': col} for col in df.columns], 
+                        value='meal_mid', 
+                        options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                         style =style_dropdown)], 
             style={'display':'flex'}),
             html.Iframe(
@@ -145,19 +156,18 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare', style = style_H3),
                      dcc.Dropdown(
                                 id='drop3_a',
-                                value='meal_mid',  # REQUIRED to show the plot on the first page load
+                                value='meal_mid', 
                                 options=[{'label': col, 'value': col} for col in df.columns], 
                                 style=style_dropdown),
                      html.H3('among Cities', style = style_H3),
-                    dcc.Dropdown(
+                     dcc.Dropdown(
                         id='drop3_b',
-                        value=['Vancouver', 'Toronto'],  # REQUIRED to show the plot on the first page load
+                        value=['Vancouver', 'Toronto'], 
                         options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
-                        style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
+                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
             html.Iframe(
                 id='plot3',
                 style=style_plot3)
-            
         ])
         ])
 ])
@@ -170,6 +180,7 @@ app.layout = dbc.Container([
     Output(component_id='plot2', component_property='srcDoc'),
     Output(component_id='plot3', component_property='srcDoc'),
     Output('prov_checklist', 'value'),
+    Output('drop3_b', 'options'),
     [Input(component_id='prov_checklist', component_property='value'),
      Input('population', 'value'),
      Input('drop1', 'value'),
@@ -204,11 +215,15 @@ def update_df(options_chosen, population_chosen,
 
     else: # in all other cases where not 'all'
         dff = dff[dff['province'].isin(options_chosen)]
+    
+    # available cities according to provinces chosen
+    prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+    
 
     return (plot_altair1(dff, drop1_chosen), 
             plot_altair2(dff, drop2a_chosen, drop2b_chosen), 
             plot_altair3(dff, drop3a_chosen, drop3b_chosen),
-            options_chosen)
+            options_chosen, prov_cities)
 
 
 #------------------------------------------------------------------------------
