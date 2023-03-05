@@ -91,7 +91,7 @@ app.layout = dbc.Container([
                     id='prov_checklist',                
                     options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
                              [{'label': x, 'value': x, 'disabled':False}
-                             for x in df['province'].unique()],
+                             for x in provs],
                     value=['all'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
