@@ -8,3 +8,5 @@ Stretch goals:
 - adding a map of Canada which interactively shows city locations
 
 ![dashBoard](reports/AppSketch.png "App Sketch")
+Pleae find our app on Heroku: [Cost-of-living_Dashboard](https://cost-of-living.herokuapp.com/)
+
