@@ -66,13 +66,12 @@ app.layout = dbc.Container([
             
             ### CHECKLIST ###
             html.H3("Select the Province: ", style = style_H3_c),
-            dcc.Checklist(['Select All'],[],id="all_checklist"),
+            dcc.Checklist(['Select All'],['Select All'],id="all_checklist"),
             dcc.Checklist(
                     id='prov_checklist',                
                     options=
                              [{'label': x, 'value': x, 'disabled':False}
-                             for x in provs],
-                    value=['Alberta'],    # values chosen by default
+                             for x in provs],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
