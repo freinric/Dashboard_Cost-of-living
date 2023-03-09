@@ -13,9 +13,10 @@ import dash_bootstrap_components as dbc
 
 ### TABLE OF CONTENTS ###
 # DEFINING 'GLOBAL' VARIABLES
-# PLOT FUNCTIONS
 # APP LAYOUT
-# CALLBACK
+# CALLBACKS
+## CHECKBOXES
+## PLOT FUNCTIONS
 
 #------------------------------------------------------------------------------
 # DEFINING
@@ -65,12 +66,13 @@ app.layout = dbc.Container([
             
             ### CHECKLIST ###
             html.H3("Select the Province: ", style = style_H3_c),
+            dcc.Checklist(['Select All'],[],id="all_checklist"),
             dcc.Checklist(
                     id='prov_checklist',                
-                    options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
+                    options=
                              [{'label': x, 'value': x, 'disabled':False}
                              for x in provs],
-                    value=['all'],    # values chosen by default
+                    value=['Alberta'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
@@ -155,7 +157,20 @@ app.layout = dbc.Container([
 ### CALLBACK GRAPHS AND CHECKBOXES ###
 
 ### CHECKBOXES ###
-
+@app.callback(
+        Output("prov_checklist", "value"),
+        Output("all_checklist", "value"),
+        Input("prov_checklist", "value"),
+        Input("all_checklist", "value"),
+)
+def sync_checklists(prov_chosen, all_chosen):
+    ctx = callback_context
+    input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if input_id == "prov_checklist":
+        all_chosen = ["Select all"] if set(prov_chosen) == set(provs) else []
+    else:
+        prov_chosen = provs if all_chosen else []
+    return prov_chosen, all_chosen  
 
 ### PLOT 1 ###
 @app.callback(
