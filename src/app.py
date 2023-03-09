@@ -1,10 +1,8 @@
-import pandas as pd     
-import datetime as dt
+import pandas as pd
 import altair as alt
 
 import dash                                     
-from dash import dcc, html, Input, Output, html
-import plotly.express as px
+from dash import Dash, dcc, html, Input, Output, State, callback_context
 import dash_bootstrap_components as dbc
 
 # POSSIBLE LINKS FOR TOPJSON MAP
@@ -15,9 +13,10 @@ import dash_bootstrap_components as dbc
 
 ### TABLE OF CONTENTS ###
 # DEFINING 'GLOBAL' VARIABLES
-# PLOT FUNCTIONS
 # APP LAYOUT
-# CALLBACK
+# CALLBACKS
+## CHECKBOXES
+## PLOT FUNCTIONS
 
 #------------------------------------------------------------------------------
 # DEFINING
@@ -47,31 +46,11 @@ style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
 style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 
 #------------------------------------------------------------------------------
-### PLOT 1 FUNCTION ###
-def plot_altair1(dff, drop1_chosen):
-    barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
-    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
-    alt.Y('city', sort='x', title=""),
-    tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return barchart.to_html()
 
-### PLOT 2 FUNCTION ###
-def plot_altair2(dff, drop_a, drop_b):
-    chart = alt.Chart(dff).mark_circle().encode(
-        x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
-        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
-        tooltip=['city', drop_a, drop_b]
-    ).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return chart.to_html()
 
-### PLOT 3 FUNCTION ###
-def plot_altair3(dff, drop_a, drop_b):  
-    chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
-        y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
-        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
-                           ).configure_axis(labelFontSize = 16)
-    return chart.to_html()
+
+
+
 
 #------------------------------------------------------------------------------
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -87,12 +66,12 @@ app.layout = dbc.Container([
             
             ### CHECKLIST ###
             html.H3("Select the Province: ", style = style_H3_c),
+            dcc.Checklist(['Select All'],['Select All'],id="all_checklist"),
             dcc.Checklist(
                     id='prov_checklist',                
-                    options=[{'label': 'Select all', 'value': 'all', 'disabled':False}] +
+                    options=
                              [{'label': x, 'value': x, 'disabled':False}
-                             for x in provs],
-                    value=['all'],    # values chosen by default
+                             for x in provs],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
@@ -175,55 +154,91 @@ app.layout = dbc.Container([
 #------------------------------------------------------------------------------
 
 ### CALLBACK GRAPHS AND CHECKBOXES ###
-@app.callback(
-    Output(component_id='plot1', component_property='srcDoc'),
-    Output(component_id='plot2', component_property='srcDoc'),
-    Output(component_id='plot3', component_property='srcDoc'),
-    Output('prov_checklist', 'value'),
-    Output('drop3_b', 'options'),
-    [Input(component_id='prov_checklist', component_property='value'),
-     Input('population', 'value'),
-     Input('drop1', 'value'),
-     Input('drop2_a', 'value'),
-     Input('drop2_b', 'value'),
-     Input('drop3_a', 'value'),
-     Input('drop3_b', 'value'),
-     ]
-)
-def update_df(options_chosen, population_chosen, 
-              drop1_chosen, 
-              drop2a_chosen, drop2b_chosen, 
-              drop3a_chosen, drop3b_chosen):
 
-    # filter by population
+### CHECKBOXES ###
+@app.callback(
+        Output("prov_checklist", "value"),
+        Output("all_checklist", "value"),
+        Input("prov_checklist", "value"),
+        Input("all_checklist", "value"),
+)
+def sync_checklists(prov_chosen, all_chosen):
+    ctx = callback_context
+    input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if input_id == "prov_checklist":
+        all_chosen = ["Select all"] if set(prov_chosen) == set(provs) else []
+    else:
+        prov_chosen = provs if all_chosen else []
+    return prov_chosen, all_chosen  
+
+### PLOT 1 ###
+@app.callback(
+        Output('plot1', 'srcDoc'),
+        Input('prov_checklist', 'value'),
+        Input('population','value'),
+        Input('drop1','value'),
+)
+def plot_altair1(prov_chosen, population_chosen, drop1_chosen):
+    # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    
-    # filtering by provinces chosen + updating the checkboxes with 'select all'
-    if "all" in options_chosen and len(options_chosen) == 13: # want 'all' only highlighted when len = 14
-        options_chosen.remove('all') # remove 'all' from list, unhighlight
-        dff = dff[dff['province'].isin(options_chosen)] # new df of filtered list
+    dff = dff[dff['province'].isin(prov_chosen)]
 
-    elif "all" in options_chosen: # if 'all' is selected
-        options_chosen = ["all"] + provs # make all highlight when 'all' is chosen
-        #dff = dff # have all dataframe
+    barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
+    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
+    alt.Y('city', sort='x', title=""),
+    tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
+    return barchart.to_html()
 
-    elif "all" not in options_chosen and len(options_chosen) == 13: # if all provs are chosen, highlight 'all'
-        options_chosen = ["all"] + provs # highlight 'all' if everything else is highlighted
-        #dff = dff
+### PLOT 2 ###
+@app.callback(
+        Output('plot2', 'srcDoc'),
+        Input('prov_checklist', 'value'),
+        Input('population','value'),
+        Input('drop2_a', 'value'),
+        Input('drop2_b', 'value'),
+)
+def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
+    # filtering df
+    popmin = population_chosen[0]
+    popmax = population_chosen[1]
+    dff = df[df['population'].between(popmin, popmax)]
+    dff = dff[dff['province'].isin(prov_chosen)]
 
-    else: # in all other cases where not 'all'
-        dff = dff[dff['province'].isin(options_chosen)]
-    
-    # available cities according to provinces chosen
+    # plot chart
+    chart = alt.Chart(dff).mark_circle().encode(
+        x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
+        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
+        tooltip=['city', drop_a, drop_b]
+    ).configure_axis(labelFontSize = 16, titleFontSize=20)
+    return chart.to_html()
+
+### PLOT 3 ###
+@app.callback(
+        Output('plot3', 'srcDoc'),
+        Output('drop3_b', 'options'),
+        Input('prov_checklist', 'value'),
+        Input('population','value'),
+        Input('drop3_a', 'value'),
+        Input('drop3_b', 'value'),
+)
+def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
+    # filtering df
+    popmin = population_chosen[0]
+    popmax = population_chosen[1]
+    dff = df[df['population'].between(popmin, popmax)]
+    dff = dff[dff['province'].isin(prov_chosen)]
+
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
-    
 
-    return (plot_altair1(dff, drop1_chosen), 
-            plot_altair2(dff, drop2a_chosen, drop2b_chosen), 
-            plot_altair3(dff, drop3a_chosen, drop3b_chosen),
-            options_chosen, prov_cities)
+    # plot chart
+    chart = alt.Chart(dff).mark_bar().encode(
+        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
+        y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
+        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
+                           ).configure_axis(labelFontSize = 16)
+    return chart.to_html(), prov_cities
 
 
 #------------------------------------------------------------------------------
