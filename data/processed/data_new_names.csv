@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 old_name,new_name
+=======
+old_name, new_name
+>>>>>>> d63f3faf09010bad9b43034e64567b61e37c1104
 city,City
 country,Country
 meal_cheap,Cheap Meal
