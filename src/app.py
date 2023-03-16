@@ -190,7 +190,7 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     alt.Y('city', sort='x', title=""),
     color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
                               alt.value('red'),
-                              alt.value('steelblue')),
+                              'provgroup'),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html(), prov_cities
 
