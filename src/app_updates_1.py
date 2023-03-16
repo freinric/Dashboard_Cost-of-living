@@ -20,7 +20,7 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("Cost-of-living_Dashboard-R/data/processed/data.csv")  
+df = pd.read_csv("Cost-of-living_Dashboard/data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 colors = {
