@@ -104,8 +104,14 @@ app.layout = dbc.Container([
                     placeholder="Variables",
                     value='meal_cheap',  
                     options=[{'label': col, 'value': col} for col in df.columns[2:55]], # only including actual variables
-                    style = style_dropdown)], 
+                    style = style_dropdown),
+                    ], 
                     style = {'display': 'flex'}),
+                html.H3('Cities to Highlight:', style = style_H3),
+                dcc.Dropdown(
+                        id='drop3_b',
+                        value=['Vancouver', 'Toronto'], 
+                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True),
                 html.Iframe(
                     id='plot1',
                     style = style_plot1)], 
@@ -138,11 +144,7 @@ app.layout = dbc.Container([
                                 value='meal_mid', 
                                 options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
                                 style=style_dropdown),
-                     html.H3('among Cities', style = style_H3),
-                     dcc.Dropdown(
-                        id='drop3_b',
-                        value=['Vancouver', 'Toronto'], 
-                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
+                     html.H3('among Cities', style = style_H3)],
                     style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
             html.Iframe(
                 id='plot3',
