@@ -174,22 +174,56 @@ def sync_checklists(prov_chosen, all_chosen):
 ### PLOT 1 ###
 @app.callback(
         Output('plot1', 'srcDoc'),
+        Output('drop3_b', 'options'),
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop1','value'),
+        Input('drop3_b', 'value'),
 )
-def plot_altair1(prov_chosen, population_chosen, drop1_chosen):
+def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
+    prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
+    color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
+                              alt.value('red'),
+                              alt.value('steelblue')),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return barchart.to_html()
+    return barchart.to_html(), prov_cities
+
+# ### PLOT 3 ###
+# @app.callback(
+#         Output('plot3', 'srcDoc'),
+#         Output('drop3_b', 'options'),
+#         Input('prov_checklist', 'value'),
+#         Input('population','value'),
+#         Input('drop3_a', 'value'),
+#         Input('drop3_b', 'value'),
+# )
+# def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
+#     # filtering df
+#     popmin = population_chosen[0]
+#     popmax = population_chosen[1]
+#     dff = df[df['population'].between(popmin, popmax)]
+#     dff = dff[dff['province'].isin(prov_chosen)]
+
+#     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+
+#     # plot chart
+#     chart = alt.Chart(dff).mark_bar().encode(
+#         x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
+#         y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
+#         ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
+#                            ).configure_axis(labelFontSize = 16)
+#     return chart.to_html(), prov_cities
+
 
 ### PLOT 2 ###
 @app.callback(
@@ -214,31 +248,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
 
-### PLOT 3 ###
-@app.callback(
-        Output('plot3', 'srcDoc'),
-        Output('drop3_b', 'options'),
-        Input('prov_checklist', 'value'),
-        Input('population','value'),
-        Input('drop3_a', 'value'),
-        Input('drop3_b', 'value'),
-)
-def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
-    # filtering df
-    popmin = population_chosen[0]
-    popmax = population_chosen[1]
-    dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[dff['province'].isin(prov_chosen)]
 
-    prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
-
-    # plot chart
-    chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
-        y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
-        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
-                           ).configure_axis(labelFontSize = 16)
-    return chart.to_html(), prov_cities
 
 
 #------------------------------------------------------------------------------
