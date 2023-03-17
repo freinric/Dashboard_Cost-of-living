@@ -23,6 +23,22 @@ import dash_bootstrap_components as dbc
 df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
+provdict = {'AB': 'Alberta', 
+            'BC':'British Columbia', 
+            'Prairies':['Saskatchewan','Manitoba'], 
+            'Maritimes':['New Brunswick','Newfoundland and Labrador','Nova Scotia','Prince Edward Island'],
+            'Territories':['Northwest Territories','Nunavut','Yukon'],
+            'ON':'Ontario',
+            'QB':'Quebec'}
+
+provdf = pd.DataFrame.from_dict(provdict, orient='index')
+provdf = provdf.explode(0)
+provdf.reset_index(inplace=True)
+provdf.rename(columns={0:'province', 'index':'provgroup'}, inplace=True)
+
+df = pd.merge(df, provdf, how='left', on=['province'])
+
+
 colors = {
     'background': 'dark',
     'background_dropdown': '#DDDDDD',
