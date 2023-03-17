@@ -24,20 +24,24 @@ df = pd.read_csv("data/processed/data.csv")
 provs = sorted([x for x in df['province'].unique()])
 
 # defining province groups #
-provdict = {'AB': 'Alberta', 
-            'BC':'British Columbia', 
+provdict = {'West': ['Alberta', 'British Columbia'],
             'Prairies':['Saskatchewan','Manitoba'], 
             'Maritimes':['New Brunswick','Newfoundland and Labrador','Nova Scotia','Prince Edward Island'],
             'Territories':['Northwest Territories','Nunavut','Yukon'],
-            'ON':'Ontario',
-            'QB':'Quebec'}
+            'Central': ['Ontario','Quebec']}
 
 # colour coding of province groups #
-provcold = {'BC':'#66c1a4',
-           'AB':'#8ca0cb',
+# provcold = {'BC':'#66c1a4',
+#            'AB':'#8ca0cb',
+#            'Prairies':'#ffd92e',
+#            'ON':'#fb8d61',
+#            'QB':'#a4d753',
+#            'Maritimes':'#e78ac2',
+#            'Territories':'#e5c394'}
+
+provcold = {'West':'#66c1a4',
            'Prairies':'#ffd92e',
-           'ON':'#fb8d61',
-           'QB':'#a4d753',
+           'Central':'#a4d753',
            'Maritimes':'#e78ac2',
            'Territories':'#e5c394'}
 
