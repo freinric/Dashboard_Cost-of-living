@@ -23,6 +23,7 @@ import dash_bootstrap_components as dbc
 df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
+# defining province groups #
 provdict = {'AB': 'Alberta', 
             'BC':'British Columbia', 
             'Prairies':['Saskatchewan','Manitoba'], 
@@ -31,12 +32,25 @@ provdict = {'AB': 'Alberta',
             'ON':'Ontario',
             'QB':'Quebec'}
 
+# colour coding of province groups #
+provcold = {'BC':'#66c1a4',
+           'AB':'#8ca0cb',
+           'Prairies':'#ffd92e',
+           'ON':'#fb8d61',
+           'QB':'#a4d753',
+           'Maritimes':'#e78ac2',
+           'Territories':'#e5c394'}
+
+domain = [x for x in provcold.keys()]
+range_ = [x for x in provcold.values()]
+
+# merging to dataframe
 provdf = pd.DataFrame.from_dict(provdict, orient='index')
 provdf = provdf.explode(0)
 provdf.reset_index(inplace=True)
 provdf.rename(columns={0:'province', 'index':'provgroup'}, inplace=True)
-
 df = pd.merge(df, provdf, how='left', on=['province'])
+
 
 
 colors = {
@@ -204,13 +218,13 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
-    color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
-                              alt.value('red'),
-                              'provgroup'),
+    color = alt.Color('provgroup', scale=alt.Scale(domain=domain, range=range_)),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html(), prov_cities
 
-
+"""color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
+                              alt.value('red'),
+                              'provgroup')"""
 ### PLOT 2 ###
 @app.callback(
         Output('plot2', 'srcDoc'),
