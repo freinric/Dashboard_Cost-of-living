@@ -34,8 +34,33 @@ for key in old:
     for value in new:
         new_name_dic[key] = value
         new.remove(value)
-        break
-# now the new names are stored in the dictionary titled new_name_dict
+        break     # now the new names are stored in the dictionary titled new_name_dict
+
+
+### CHECKBOX CATEGORY FUNCTION
+def col_filter(cat_value):
+    cols = ['city', 'data_quality','lat','lng','province', 'population']
+    for i in cat_value:
+        if i == 'restaurant':
+            cols = cols + list(df.columns[2:10])
+        if i == 'market':
+            cols = cols + list(df.columns[10:29])
+        if i == 'transportation':
+            cols = cols + list(df.columns[29:37])
+        if i == 'utilities':
+            cols = cols + list(df.columns[37:40])
+        if i == 'leisure':
+            cols = cols + list(df.columns[40:43])
+        if i == 'childcare':
+            cols = cols + list(df.columns[43:45])
+        if i == 'clothing':
+            cols = cols + list(df.columns[45:49])
+        if i == 'home':
+            cols = cols + list(df.columns[49:57])
+    return cols
+
+    
+#print(col_filter('category_checklist'))
 
 colors = {
     'background': 'dark',
@@ -109,9 +134,8 @@ app.layout = dbc.Container([
                        html.Div(id='slider-output-container'),
            html.Br(),
            
-           ### CATEGOTY CHECKLIST ###
-            html.H3("Select your categories ", style = style_H3_c),
-            dcc.Checklist(['Select All'],['Select All'],id="all_cat_checklist"),
+           ### CATEGORY CHECKLIST ###
+            html.H3("Select Categories: ", style = style_H3_c),
             dcc.Checklist(
                     id='category_checklist',                
                     options=[{'label': 'Restaurant', 'value': 'restaurant'},
@@ -220,27 +244,7 @@ def sync_checklists(prov_chosen, all_chosen):
 def update_output(value):
     return 'You have selected cities with population between {} and {}'.format(value[0], value[1])
 
-### CHECKBOX CATEGORY FUNCTION
-def col_filter(value):
-    cols = []
-    for i in value:
-        if i == 'restaurant':
-            cols = cols + list(df.columns[2:10])
-        if i == 'market':
-            cols = cols + list(df.columns[10:29])
-        if i == 'transportation':
-            cols = cols + list(df.columns[29:37])
-        if i == 'utilities':
-            cols = cols + list(df.columns[37:40])
-        if i == 'leisure':
-            cols = cols + list(df.columns[40:43])
-        if i == 'childcare':
-            cols = cols + list(df.columns[43:45])
-        if i == 'clothing':
-            cols = cols + list(df.columns[45:49])
-        if i == 'home':
-            cols = cols + list(df.columns[49:57])
-    return cols
+
 
 ### PLOT 1 ###
 @app.callback(
@@ -248,12 +252,14 @@ def col_filter(value):
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop1','value'),
+        Input('category_checklist', 'value'),
 )
-def plot_altair1(prov_chosen, population_chosen, drop1_chosen):
+def plot_altair1(prov_chosen, population_chosen, drop1_chosen, categories):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
+    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
@@ -269,12 +275,14 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen):
         Input('population','value'),
         Input('drop2_a', 'value'),
         Input('drop2_b', 'value'),
+        Input('category_checklist', 'value'),
 )
-def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
+def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
+    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
     # plot chart
@@ -293,12 +301,14 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
         Input('population','value'),
         Input('drop3_a', 'value'),
         Input('drop3_b', 'value'),
+        Input('category_checklist', 'value'),
 )
-def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
+def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b, categories):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
+    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
