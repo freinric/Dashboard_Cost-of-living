@@ -245,21 +245,60 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
         Input('prov_checklist', 'value')
 )
 def plot_altair_map(prov_chosen):
+    chosen_province_data = {}
+    json_list = []
 
-    # plot chart
-    selection = alt.selection_multi(fields=['properties.prov_name_en'])
-    color = alt.condition(selection,
-                      alt.Color('properties.prov_name_en:N', legend=None),
-                      alt.value('lightgray'))
+    for feature in canada_province["features"]:
 
-    chart = alt.Chart(data_geojson).mark_geoshape(
-    ).encode(
-    color = color,
-    tooltip = 'properties.prov_name_en:N'
-    ).project(
-    type='identity', reflectY=True).add_selection(selection)
+        if feature["properties"]["prov_name_en"] in prov_chosen:
+            print(feature["properties"]["prov_name_en"])
+            json_list.append(feature)
+        else:
+            pass
+
+    chosen_province_data["features"] = json_list
+    data_geojson_chosen = alt.InlineData(values=chosen_province_data, format=alt.DataFormat(property='features',type='json'))
+    
+    
+    
+    c_map = alt.Chart(data_geojson).mark_geoshape(
+                ).encode(
+                    color = alt.value('lightgray'),
+                    tooltip = 'properties.prov_name_en:N'
+                ).project(
+                    type='identity', reflectY=True)#.add_selection(selection) #.transform_filter(selection)
+
+    filter_p = alt.Chart(data_geojson_chosen).mark_geoshape(
+                ).encode(
+                    color = 'properties.prov_name_en:N',
+                    tooltip = 'properties.prov_name_en:N'
+                ).project(
+                    type='identity', reflectY=True)
+    
+    chart = c_map + filter_p
+
+#     # plot chart
+#     selection = alt.selection_multi(fields=['properties.prov_name_en'])
+#     color = alt.condition(selection,
+#                       alt.Color('properties.prov_name_en:N', legend=None),
+#                       alt.value('lightgray'))
+    
+#     base = alt.Chart(data_geojson).mark_geoshape(
+#     ).encode(
+#     color = color,
+#     tooltip = 'properties.prov_name_en:N'
+#     ).project(
+#     type='identity', reflectY=True)
+
+#     filter_p = alt.Chart(data_geojson).mark_geoshape(
+#     ).encode(
+#     color = color,
+#     tooltip = 'properties.prov_name_en:N'
+#     ).project(
+#     type='identity', reflectY=True).add_selection(selection).transform_filter(selection)
 
 
+#     chart = base + filter_p
     
     return chart.to_html()
 
