@@ -142,7 +142,7 @@ app.layout = dbc.Container([
            html.Br(),
            
            ### CATEGORY CHECKLIST ###
-            html.H3("Select Categories ", style = style_H3_c),
+            html.H3("Select Categories: ", style = style_H3_c),
             dcc.Checklist(
                     id='category_checklist',                
                     options=[{'label': 'Restaurant', 'value': 'restaurant'},
