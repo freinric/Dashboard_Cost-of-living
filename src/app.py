@@ -21,11 +21,11 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("data.csv")  
+df = pd.read_csv("../data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 ## data for map
-canada_province = json.load(open("georef-canada-province@public.geojson", 'r'))
+canada_province = json.load(open("../data/processed/georef-canada-province@public.geojson", 'r'))
 # modify geojson issue
 for feature in canada_province["features"]:
     feature["properties"]["prov_name_en"] = feature["properties"]["prov_name_en"][0]
