@@ -1,5 +1,6 @@
 import pandas as pd
 import altair as alt
+import json
 
 import dash                                     
 from dash import Dash, dcc, html, Input, Output, State, callback_context
@@ -20,8 +21,16 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("data/processed/data.csv")  
+df = pd.read_csv("data.csv")  
 provs = sorted([x for x in df['province'].unique()])
+
+## data for map
+canada_province = json.load(open("georef-canada-province@public.geojson", 'r'))
+# modify geojson issue
+for feature in canada_province["features"]:
+    feature["properties"]["prov_name_en"] = feature["properties"]["prov_name_en"][0]
+data_geojson = alt.InlineData(values=canada_province, format=alt.DataFormat(property='features',type='json'))
+    
 
 colors = {
     'background': 'dark',
@@ -132,20 +141,10 @@ app.layout = dbc.Container([
             html.Br(),
             
             ### PLOT 3 LAYOUT ###
-            dbc.Col([html.H3('Compare', style = style_H3),
-                     dcc.Dropdown(
-                                id='drop3_a',
-                                value='meal_mid', 
-                                options=[{'label': col, 'value': col} for col in df.columns[2:55]], 
-                                style=style_dropdown),
-                     html.H3('among Cities', style = style_H3),
-                     dcc.Dropdown(
-                        id='drop3_b',
-                        value=['Vancouver', 'Toronto'], 
-                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True)],
+            dbc.Col([html.H3('Province Region', style = style_H3)],
                     style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
             html.Iframe(
-                id='plot3',
+                id='plot_map',
                 style=style_plot3)
         ])
         ])
@@ -214,31 +213,94 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b,):
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
 
-### PLOT 3 ###
+# ### PLOT 3 ###
+# @app.callback(
+#         Output('plot3', 'srcDoc'),
+#         Output('drop3_b', 'options'),
+#         Input('prov_checklist', 'value'),
+#         Input('population','value'),
+#         Input('drop3_a', 'value'),
+#         Input('drop3_b', 'value'),
+# )
+# def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
+#     # filtering df
+#     popmin = population_chosen[0]
+#     popmax = population_chosen[1]
+#     dff = df[df['population'].between(popmin, popmax)]
+#     dff = dff[dff['province'].isin(prov_chosen)]
+
+#     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+
+#     # plot chart
+#     chart = alt.Chart(dff).mark_bar().encode(
+#         x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
+#         y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
+#         ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
+#                            ).configure_axis(labelFontSize = 16)
+#     return chart.to_html(), prov_cities
+
+### PLOT 4 Canada Map ###
 @app.callback(
-        Output('plot3', 'srcDoc'),
-        Output('drop3_b', 'options'),
-        Input('prov_checklist', 'value'),
-        Input('population','value'),
-        Input('drop3_a', 'value'),
-        Input('drop3_b', 'value'),
+        Output('plot_map', 'srcDoc'),
+        Input('prov_checklist', 'value')
 )
-def plot_altair3(prov_chosen, population_chosen, drop_a, drop_b,):
-    # filtering df
-    popmin = population_chosen[0]
-    popmax = population_chosen[1]
-    dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[dff['province'].isin(prov_chosen)]
+def plot_altair_map(prov_chosen):
+    chosen_province_data = {}
+    json_list = []
 
-    prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+    for feature in canada_province["features"]:
 
-    # plot chart
-    chart = alt.Chart(dff).mark_bar().encode(
-        x = alt.X(drop_a, axis=alt.Axis(format='$.0f', title = None)),
-        y = alt.Y('city',sort='x', axis=alt.Axis(title = None))
-        ).transform_filter(alt.FieldOneOfPredicate(field='city', oneOf=drop_b)
-                           ).configure_axis(labelFontSize = 16)
-    return chart.to_html(), prov_cities
+        if feature["properties"]["prov_name_en"] in prov_chosen:
+            print(feature["properties"]["prov_name_en"])
+            json_list.append(feature)
+        else:
+            pass
+
+    chosen_province_data["features"] = json_list
+    data_geojson_chosen = alt.InlineData(values=chosen_province_data, format=alt.DataFormat(property='features',type='json'))
+    
+    
+    
+    c_map = alt.Chart(data_geojson).mark_geoshape(
+                ).encode(
+                    color = alt.value('lightgray'),
+                    tooltip = 'properties.prov_name_en:N'
+                ).project(
+                    type='identity', reflectY=True)#.add_selection(selection) #.transform_filter(selection)
+
+    filter_p = alt.Chart(data_geojson_chosen).mark_geoshape(
+                ).encode(
+                    color = 'properties.prov_name_en:N',
+                    tooltip = 'properties.prov_name_en:N'
+                ).project(
+                    type='identity', reflectY=True)
+    
+    chart = c_map + filter_p
+
+#     # plot chart
+#     selection = alt.selection_multi(fields=['properties.prov_name_en'])
+#     color = alt.condition(selection,
+#                       alt.Color('properties.prov_name_en:N', legend=None),
+#                       alt.value('lightgray'))
+    
+#     base = alt.Chart(data_geojson).mark_geoshape(
+#     ).encode(
+#     color = color,
+#     tooltip = 'properties.prov_name_en:N'
+#     ).project(
+#     type='identity', reflectY=True)
+
+#     filter_p = alt.Chart(data_geojson).mark_geoshape(
+#     ).encode(
+#     color = color,
+#     tooltip = 'properties.prov_name_en:N'
+#     ).project(
+#     type='identity', reflectY=True).add_selection(selection).transform_filter(selection)
+
+
+#     chart = base + filter_p
+    
+    return chart.to_html()
 
 
 #------------------------------------------------------------------------------
