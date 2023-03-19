@@ -45,10 +45,13 @@ for key in old:
         break
 # now the new names are stored in the dictionary titled new_name_dict
 
+# dropdown options
+drop_options = [{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]]
+
 
 ### CHECKBOX CATEGORY FUNCTION
 def col_filter(cat_value):
-    cols = ['city', 'data_quality','lat','lng','province', 'population']
+    cols = ['city', 'data_quality','province', 'population']
     for i in cat_value:
         if i == 'restaurant':
             cols = cols + list(df.columns[2:10])
@@ -174,8 +177,8 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id='drop1',
                     placeholder="Variables",
-                    value='meal_cheap',  
-                    options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], # only including actual variables
+                    options=drop_options, # only including actual variables
+                    value=drop_options[0]['value'],  # set default as first in array
                     style = style_dropdown),
                     ], 
                     style = {'display': 'flex'}),
@@ -194,14 +197,14 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
                      dcc.Dropdown(
                                 id='drop2_a',
-                                value='meal_cheap', 
-                                options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], 
+                                options=drop_options, # only including actual variables
+                                value=drop_options[0]['value'],  # set default as first in array 
                          style = style_dropdown),
                      html.H3('and ', style  = {'color': colors['H3']}),
                     dcc.Dropdown(
                         id='drop2_b',
-                        value='meal_mid', 
-                        options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], 
+                        options=drop_options, # only including actual variables
+                        value=drop_options[1]['value'],  # set default as second in array 
                         style =style_dropdown)], 
             style={'display':'flex'}),
             html.Iframe(
@@ -269,8 +272,9 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
     dff = dff[col_filter(categories)] 
     dff = dff[dff['province'].isin(prov_chosen)]
 
+    # setting filtered dropdown options
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
-    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff[6:]]
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff.columns[4:]]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
@@ -300,7 +304,9 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     dff = df[df['population'].between(popmin, popmax)]
     dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
-    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff[6:]]
+
+    # setting filtered dropdown options
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff.columns[4:]]
 
     # plot chart
     chart = alt.Chart(dff).mark_circle().encode(
