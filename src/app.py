@@ -287,7 +287,7 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     # setting filtered dropdown options
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
 
-    barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
+    barchart = alt.Chart(dff[dff[drop1_chosen]>0]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+new_name_dic[drop1_chosen], axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
@@ -315,7 +315,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, drop_c):
 
 
     # plot chart
-    chart = alt.Chart(dff).mark_circle(size=75).encode(
+    chart = alt.Chart(dff[(dff[drop_a]>0)&dff[drop_b]>0]).mark_circle(size=75).encode(
         x= alt.X(drop_a, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_a]),
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_b]),
         color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_c),
