@@ -256,18 +256,20 @@ def update_output(value):
         Output("drop1", "value"),
         Output("drop2_a", "value"),
         Output("drop2_b", "value"),
+        Output("drop1", "options"),
+        Output("drop2_a", "options"),
+        Output("drop2_b", "options"),
         Input("category_checklist", "value"),
 )
 def update_dropdowns(categories):
     newoptions = [{'label': new_name_dic[col], 'value': col} for col in col_filter(categories)[4:]]
-    return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value']
+    return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value'], newoptions, newoptions, newoptions
 
 
 ### PLOT 1 ###
 @app.callback(
         Output('plot1', 'srcDoc'),
         Output('drop3_b', 'options'),
-        Output('drop1', 'options'),
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop1','value'),
@@ -279,12 +281,10 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[col_filter(categories)] 
     dff = dff[dff['province'].isin(prov_chosen)]
 
     # setting filtered dropdown options
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
-    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff.columns[4:]]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
@@ -293,14 +293,12 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
                               alt.value('red'),
                               alt.value('steelblue')),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return barchart.to_html(), prov_cities, newoptions
+    return barchart.to_html(), prov_cities
 
 
 ### PLOT 2 ###
 @app.callback(
         Output('plot2', 'srcDoc'),
-        Output('drop2_a', 'options'),
-        Output('drop2_b', 'options'),
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop2_a', 'value'),
@@ -312,11 +310,8 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
-    # setting filtered dropdown options
-    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff.columns[4:]]
 
     # plot chart
     chart = alt.Chart(dff).mark_circle().encode(
@@ -324,7 +319,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
         tooltip=['city', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return chart.to_html(), newoptions, newoptions
+    return chart.to_html()
 
 
 ### PLOT 4 Canada Map ###
