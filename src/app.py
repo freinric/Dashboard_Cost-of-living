@@ -81,7 +81,10 @@ colors = {
     'teal':'#00bdb8'
 }
 
-style_dropdown = {'width': '100%', 'font-family': 'arial', 
+style_dropdown = {'width': '230px', 'font-family': 'arial', 
+                  "font-size": "1.1em", "background-color": colors['background_dropdown'], 
+                  'font-weight': 'bold', 'border':'0px'}
+style_dropdown_c = {'width': '100%', 'font-family': 'arial', 
                   "font-size": "1.1em", "background-color": colors['background_dropdown'], 
                   'font-weight': 'bold', 'border':'0px'}
 
@@ -101,7 +104,7 @@ style_filterbox = {'border': '1px solid #d3d3d3'}
 # style={'overflowY': 'scroll', 'height': 500}
 style_plot1 = {'border-width': '0', 'width': '100%', 'height': '800px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
-style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
+style_plot3 = {'border-width': '0', 'width': '100%', 'height': '350px'}
 
 style_card = {'border': '1px solid #d3d3d3'}
 
@@ -121,7 +124,7 @@ app.layout = dbc.Container([
             html.Div([
             html.Br(),
             ### CHECKLIST PROVINCES###
-            html.H3("Select the Province: ", style = style_H3_c),
+            html.H3("Select Provinces: ", style = style_H3_c),
             dcc.Checklist(['Select All'],['Select All'],id="all_checklist"),
             dcc.Checklist(
                     id='prov_checklist',                
@@ -153,7 +156,7 @@ app.layout = dbc.Container([
            html.Br(),
            
            ### CATEGORY CHECKLIST ###
-            html.H3("Select Categories: ", style = style_H3_c),
+            html.H3("Select Dropdown Variable Categories: ", style = style_H3_c),
             dcc.Checklist(
                     id='category_checklist',                
                     options=[{'label': 'Restaurant', 'value': 'restaurant'},
@@ -186,13 +189,15 @@ app.layout = dbc.Container([
                 style=style_plot3),
             html.Br(),
             ### PLOT 2 LAYOUT###  
-            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
+            dbc.Col([html.H3('Compare: ', style = {'color': colors['H3']})], 
+                    style={'display':'flex'}),
+            dbc.Col([
                      dcc.Dropdown(
                                 id='drop2_a',
                                 options=newoptions, # only including actual variables
                                 value=newoptions[0]['value'],  # set default as first in array 
                          style = style_dropdown),
-                     html.H3('and ', style  = {'color': colors['H3']}),
+                    html.H3('and ', style  = {'color': colors['H3']}),
                      dcc.Dropdown(
                         id='drop2_b',
                         options=newoptions, # only including actual variables
@@ -206,7 +211,7 @@ app.layout = dbc.Container([
         ### PLOT 1 LAYOUT ###
         dbc.Col([
             dbc.Col([
-                html.H3('Rank Cities by', style = style_H3), 
+                html.H3('Rank Cities by:', style = style_H3), 
                 ### DROPDOWN 1 ###
                 dcc.Dropdown(
                     id='drop1',
@@ -220,11 +225,12 @@ app.layout = dbc.Container([
             dcc.Dropdown(
                         id='drop3_b',
                         value=['Vancouver', 'Toronto'], 
-                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True),
+                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True,
+                        style=style_dropdown_c),
             html.Iframe(
                     id='plot1',
                     style = style_plot1)], 
-            style={"height": "10%"})
+            style={"height": "10%", 'border': '1px solid #d3d3d3'})
         ])
         
 ], 
