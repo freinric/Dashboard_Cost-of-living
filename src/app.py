@@ -171,7 +171,35 @@ app.layout = dbc.Container([
                             md = 3, style = style_card),
             html.Br(),
     
-        ### PLOT 1 LAYOUT###    
+        
+        dbc.Col([
+            ### PLOT 3 LAYOUT ###
+            dbc.Col([html.H3('Map of Canada: Province Region', style = style_H3)],
+
+                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
+            html.Iframe(
+                id='plot_map',
+                style=style_plot3),
+            html.Br(),
+            ### PLOT 2 LAYOUT###  
+            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
+                     dcc.Dropdown(
+                                id='drop2_a',
+                                options=newoptions, # only including actual variables
+                                value=newoptions[0]['value'],  # set default as first in array 
+                         style = style_dropdown),
+                     html.H3('and ', style  = {'color': colors['H3']}),
+                    dcc.Dropdown(
+                        id='drop2_b',
+                        options=newoptions, # only including actual variables
+                        value=newoptions[1]['value'],  # set default as second in array 
+                        style =style_dropdown)], 
+            style={'display':'flex'}),
+            html.Iframe(
+                id='plot2',
+                style = style_plot2)
+
+        ]),  
         dbc.Col([
             dbc.Col([
                 html.H3('Rank Cities by', style = style_H3), 
@@ -192,37 +220,7 @@ app.layout = dbc.Container([
                 html.Iframe(
                     id='plot1',
                     style = style_plot1)], 
-            style={"height": "10%"}),
-
-        ### PLOT 2  LAYOUT ###
-        dbc.Col([
-            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
-                     dcc.Dropdown(
-                                id='drop2_a',
-                                options=newoptions, # only including actual variables
-                                value=newoptions[0]['value'],  # set default as first in array 
-                         style = style_dropdown),
-                     html.H3('and ', style  = {'color': colors['H3']}),
-                    dcc.Dropdown(
-                        id='drop2_b',
-                        options=newoptions, # only including actual variables
-                        value=newoptions[1]['value'],  # set default as second in array 
-                        style =style_dropdown)], 
-            style={'display':'flex'}),
-            html.Iframe(
-                id='plot2',
-                style = style_plot2),
-            html.Br(),
-            
-            ### PLOT 3 LAYOUT ###
-
-            dbc.Col([html.H3('Map of Canada: Province Region', style = style_H3)],
-
-                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
-            html.Iframe(
-                id='plot_map',
-                style=style_plot3)
-        ])
+            style={"height": "10%"})
         ])
 ])
 
