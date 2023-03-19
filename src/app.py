@@ -21,11 +21,11 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("data.csv")  
+df = pd.read_csv("../data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 ## data for map
-canada_province = json.load(open("georef-canada-province@public.geojson", 'r'))
+canada_province = json.load(open("../data/processed/georef-canada-province@public.geojson", 'r'))
 # modify geojson issue
 for feature in canada_province["features"]:
     feature["properties"]["prov_name_en"] = feature["properties"]["prov_name_en"][0]
@@ -259,7 +259,34 @@ def plot_altair_map(prov_chosen):
     chosen_province_data["features"] = json_list
     data_geojson_chosen = alt.InlineData(values=chosen_province_data, format=alt.DataFormat(property='features',type='json'))
     
-    
+    color=alt.Color('properties.prov_name_en:N',
+                       scale=alt.Scale(
+                domain=['Alberta',
+                         'Yukon',
+                         'Manitoba',
+                         'Saskatchewan',
+                         'Northwest Territories',
+                         'Prince Edward Island',
+                         'Nova Scotia',
+                         'Quebec',
+                         'Nunavut',
+                         'Ontario',
+                         'British Columbia',
+                         'Newfoundland and Labrador',
+                         'New Brunswick'],
+                range=['#FF6666',
+                         '#FF9966',
+                         '#FFFF00',
+                         '#99CC99',
+                         '#339999',
+                         '#003366',
+                         '#990066',
+                         '#CCCC99',
+                         '#FFCCCC',
+                         '#FFCC99',
+                         '#CC99CC',
+                         '#CCFF99',
+                         '#CC9933']))
     
     c_map = alt.Chart(data_geojson).mark_geoshape(
                 ).encode(
@@ -270,7 +297,7 @@ def plot_altair_map(prov_chosen):
 
     filter_p = alt.Chart(data_geojson_chosen).mark_geoshape(
                 ).encode(
-                    color = 'properties.prov_name_en:N',
+                    color = color,
                     tooltip = 'properties.prov_name_en:N'
                 ).project(
                     type='identity', reflectY=True)
