@@ -317,7 +317,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     chart = alt.Chart(dff).mark_circle().encode(
         x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
-        tooltip=['city', drop_a, drop_b]
+        tooltip=['city','province', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
 
