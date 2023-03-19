@@ -159,8 +159,7 @@ app.layout = dbc.Container([
                              {'label': 'Clothing', 'value': 'clothing'},
                              {'label': 'Living', 'value': 'home'},
                        ],
-                       value=['restaurant', 'market', 'transportation', 'utilities', 'leisure', 'childcare',
-                             'clothing', 'home'],    # values chosen by default
+                       value=['restaurant'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
