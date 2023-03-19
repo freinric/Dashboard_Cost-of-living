@@ -1,6 +1,8 @@
 old_name,new_name
 city,City
 country,Country
+province,province
+population,population
 meal_cheap,Cheap Meal
 meal_mid,Average Meal for 2
 meal_mcd,Fast Food Meal

@@ -21,18 +21,18 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("../data/processed/data.csv")  
+df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 ## data for map
-canada_province = json.load(open("../data/processed/georef-canada-province@public.geojson", 'r'))
+canada_province = json.load(open("data/processed/georef-canada-province@public.geojson", 'r'))
 # modify geojson issue
 for feature in canada_province["features"]:
     feature["properties"]["prov_name_en"] = feature["properties"]["prov_name_en"][0]
 data_geojson = alt.InlineData(values=canada_province, format=alt.DataFormat(property='features',type='json'))
 
 # import new names
-new_names = pd.read_csv("../data/processed/data_new_names.csv", header = 0)
+new_names = pd.read_csv("data/processed/data_new_names.csv", header = 0)
 # df to list
 old = new_names.old_name.values.tolist()
 new  = new_names.new_name.values.tolist()
@@ -45,10 +45,13 @@ for key in old:
         break
 # now the new names are stored in the dictionary titled new_name_dict
 
+# dropdown options
+newoptions = [{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]]
+
 
 ### CHECKBOX CATEGORY FUNCTION
 def col_filter(cat_value):
-    cols = ['city', 'data_quality','lat','lng','province', 'population']
+    cols = ['city', 'data_quality','province', 'population']
     for i in cat_value:
         if i == 'restaurant':
             cols = cols + list(df.columns[2:10])
@@ -97,7 +100,7 @@ style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 
 
 
-
+### APP LAYOUT ###
 #------------------------------------------------------------------------------
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -174,8 +177,8 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id='drop1',
                     placeholder="Variables",
-                    value='meal_cheap',  
-                    options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], # only including actual variables
+                    options=newoptions, # only including actual variables
+                    value=newoptions[0]['value'],  # set default as first in array
                     style = style_dropdown),
                     ], 
                     style = {'display': 'flex'}),
@@ -194,14 +197,14 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
                      dcc.Dropdown(
                                 id='drop2_a',
-                                value='meal_cheap', 
-                                options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], 
+                                options=newoptions, # only including actual variables
+                                value=newoptions[0]['value'],  # set default as first in array 
                          style = style_dropdown),
                      html.H3('and ', style  = {'color': colors['H3']}),
                     dcc.Dropdown(
                         id='drop2_b',
-                        value='meal_mid', 
-                        options=[{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]], 
+                        options=newoptions, # only including actual variables
+                        value=newoptions[1]['value'],  # set default as second in array 
                         style =style_dropdown)], 
             style={'display':'flex'}),
             html.Iframe(
@@ -225,7 +228,7 @@ app.layout = dbc.Container([
 
 ### CALLBACK GRAPHS AND CHECKBOXES ###
 
-### CHECKBOXES ###
+### PROVINCE CHECKBOXES ###
 @app.callback(
         Output("prov_checklist", "value"),
         Output("all_checklist", "value"),
@@ -248,6 +251,19 @@ def sync_checklists(prov_chosen, all_chosen):
 def update_output(value):
     return 'You have selected cities with population between {} and {}'.format(value[0], value[1])
 
+### CATEGORY CHECKBOXES ###
+@app.callback(
+        Output("drop1", "value"),
+        Output("drop2_a", "value"),
+        Output("drop2_b", "value"),
+        Output("drop1", "options"),
+        Output("drop2_a", "options"),
+        Output("drop2_b", "options"),
+        Input("category_checklist", "value"),
+)
+def update_dropdowns(categories):
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in col_filter(categories)[4:]]
+    return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value'], newoptions, newoptions, newoptions
 
 
 ### PLOT 1 ###
@@ -265,9 +281,9 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
 
+    # setting filtered dropdown options
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
@@ -294,8 +310,8 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
+
 
     # plot chart
     chart = alt.Chart(dff).mark_circle().encode(
@@ -318,7 +334,7 @@ def plot_altair_map(prov_chosen):
     for feature in canada_province["features"]:
 
         if feature["properties"]["prov_name_en"] in prov_chosen:
-            print(feature["properties"]["prov_name_en"])
+            #print(feature["properties"]["prov_name_en"])
             json_list.append(feature)
         else:
             pass
