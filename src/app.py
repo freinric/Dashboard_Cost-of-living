@@ -6,10 +6,6 @@ import dash
 from dash import Dash, dcc, html, Input, Output, State, callback_context
 import dash_bootstrap_components as dbc
 
-# POSSIBLE LINKS FOR TOPJSON MAP
-# https://gist.github.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44?short_path=2b4dce3
-# https://gist.github.com/jdylanmc/a3fd5ca8c960eaa4b4354445b4480dad?short_path=9a3cad4
-
 #------------------------------------------------------------------------------
 
 ### TABLE OF CONTENTS ###
@@ -21,7 +17,7 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-
+#------------------------------------------------------------------------------
 df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
@@ -73,7 +69,7 @@ def col_filter(cat_value):
             cols = cols + list(df.columns[49:57])
     return cols
 
-
+### STYLES
 colors = {
     'background': 'dark',
     'background_dropdown': '#DDDDDD',
@@ -97,14 +93,9 @@ style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
 style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 
 #------------------------------------------------------------------------------
-
-
-
-
-
 ### APP LAYOUT ###
 #------------------------------------------------------------------------------
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, title='Cost of Living Dashboard', external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
        dbc.Row([
@@ -224,9 +215,8 @@ app.layout = dbc.Container([
 ])
 
 #------------------------------------------------------------------------------
-
 ### CALLBACK GRAPHS AND CHECKBOXES ###
-
+#------------------------------------------------------------------------------
 ### PROVINCE CHECKBOXES ###
 @app.callback(
         Output("prov_checklist", "value"),
@@ -265,7 +255,7 @@ def update_dropdowns(categories):
     return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value'], newoptions, newoptions, newoptions
 
 
-### PLOT 1 ###
+### PLOT 1: BARGRAPH ###
 @app.callback(
         Output('plot1', 'srcDoc'),
         Output('drop3_b', 'options'),
@@ -294,7 +284,7 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     return barchart.to_html(), prov_cities
 
 
-### PLOT 2 ###
+### PLOT 2: SCATTERPLOT ###
 @app.callback(
         Output('plot2', 'srcDoc'),
         Input('prov_checklist', 'value'),
@@ -323,7 +313,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, drop_c):
     return chart.to_html()
 
 
-### PLOT 4 Canada Map ###
+### PLOT 3: Canada Map ###
 @app.callback(
         Output('plot_map', 'srcDoc'),
         Input('prov_checklist', 'value')
