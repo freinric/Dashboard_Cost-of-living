@@ -21,18 +21,18 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-df = pd.read_csv("../data/processed/data.csv")  
+df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 ## data for map
-canada_province = json.load(open("../data/processed/georef-canada-province@public.geojson", 'r'))
+canada_province = json.load(open("data/processed/georef-canada-province@public.geojson", 'r'))
 # modify geojson issue
 for feature in canada_province["features"]:
     feature["properties"]["prov_name_en"] = feature["properties"]["prov_name_en"][0]
 data_geojson = alt.InlineData(values=canada_province, format=alt.DataFormat(property='features',type='json'))
 
 # import new names
-new_names = pd.read_csv("../data/processed/data_new_names.csv", header = 0)
+new_names = pd.read_csv("data/processed/data_new_names.csv", header = 0)
 # df to list
 old = new_names.old_name.values.tolist()
 new  = new_names.new_name.values.tolist()
@@ -254,6 +254,7 @@ def update_output(value):
 @app.callback(
         Output('plot1', 'srcDoc'),
         Output('drop3_b', 'options'),
+        Output('drop1', 'options'),
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop1','value'),
@@ -265,10 +266,11 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
     popmin = population_chosen[0]
     popmax = population_chosen[1]
     dff = df[df['population'].between(popmin, popmax)]
-    dff = dff[col_filter(categories)]
+    dff = dff[col_filter(categories)] 
     dff = dff[dff['province'].isin(prov_chosen)]
 
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff[6:]]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
@@ -277,12 +279,14 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
                               alt.value('red'),
                               alt.value('steelblue')),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return barchart.to_html(), prov_cities
+    return barchart.to_html(), prov_cities, newoptions
 
 
 ### PLOT 2 ###
 @app.callback(
         Output('plot2', 'srcDoc'),
+        Output('drop2_a', 'options'),
+        Output('drop2_b', 'options'),
         Input('prov_checklist', 'value'),
         Input('population','value'),
         Input('drop2_a', 'value'),
@@ -296,6 +300,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     dff = df[df['population'].between(popmin, popmax)]
     dff = dff[col_filter(categories)]
     dff = dff[dff['province'].isin(prov_chosen)]
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in dff[6:]]
 
     # plot chart
     chart = alt.Chart(dff).mark_circle().encode(
@@ -303,7 +308,7 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
         tooltip=['city', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
-    return chart.to_html()
+    return chart.to_html(), newoptions, newoptions
 
 
 ### PLOT 4 Canada Map ###
@@ -318,7 +323,7 @@ def plot_altair_map(prov_chosen):
     for feature in canada_province["features"]:
 
         if feature["properties"]["prov_name_en"] in prov_chosen:
-            print(feature["properties"]["prov_name_en"])
+            #print(feature["properties"]["prov_name_en"])
             json_list.append(feature)
         else:
             pass
