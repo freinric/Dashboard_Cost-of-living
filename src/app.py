@@ -78,7 +78,6 @@ colors = {
     'H3':'#005AB5'
 }
 
-
 style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
 
 style_H1 = {'textAlign': 'center', 'color': colors['H1']} # Title
@@ -87,11 +86,11 @@ style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%'} # F
 style_H3 = {'color': colors['H3'], 'width': '100%'} # For Charts Title
 
 # style={'overflowY': 'scroll', 'height': 500}
-style_plot1 = {'border-width': '0', 'width': '100%', 'height': '970px'}
+style_plot1 = {'border-width': '0', 'width': '100%', 'height': '800px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
 style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
 
-style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
+style_card = {'border': '1px solid #d3d3d3'}
 
 #------------------------------------------------------------------------------
 ### APP LAYOUT ###
@@ -101,10 +100,11 @@ app = dash.Dash(__name__, title='Cost of Living Dashboard', external_stylesheets
 app.layout = dbc.Container([
        dbc.Row([
         dbc.Col([
-            dbc.Card(
-                dbc.CardBody([html.H1('Where do you want to live?', style = style_H1), 
-                              html.H3('Cost of Living Dashboard', style = style_H2)]),
-                color = colors['background']),
+            html.Div([html.H1('Where do you want to live?', style = style_H1), 
+                    html.H3('Cost of Living Dashboard', style = style_H2),
+                    html.P('Description Placeholder: ;lkj;lasd fikdjfiwodaji ijwljd i', style=style_H2)],
+                    style=style_card),
+            html.Div([
             html.Br(),
             
             ### CHECKLIST ###
@@ -158,10 +158,8 @@ app.layout = dbc.Container([
                     inputClassName='my_box_input',         
                     labelClassName='my_box_label', 
                     inputStyle={"margin-right": "3px", "margin-left":"20px"},         
-                ),], 
-                            md = 3, style = style_card),
-            html.Br(),
-    
+                )],style=style_card)], 
+                            md = 3),
         
         dbc.Col([
             ### PLOT 3 LAYOUT ###
@@ -180,17 +178,17 @@ app.layout = dbc.Container([
                                 value=newoptions[0]['value'],  # set default as first in array 
                          style = style_dropdown),
                      html.H3('and ', style  = {'color': colors['H3']}),
-                    dcc.Dropdown(
+                     dcc.Dropdown(
                         id='drop2_b',
                         options=newoptions, # only including actual variables
                         value=newoptions[1]['value'],  # set default as second in array 
                         style =style_dropdown)], 
-            style={'display':'flex'}),
+                    style={'display':'flex'}),
             html.Iframe(
                 id='plot2',
                 style = style_plot2)
-
         ]),  
+        ### PLOT 1 LAYOUT ###
         dbc.Col([
             dbc.Col([
                 html.H3('Rank Cities by', style = style_H3), 
@@ -203,12 +201,12 @@ app.layout = dbc.Container([
                     style = style_dropdown),
                     ], 
                 style = {'display': 'flex'}),
-                html.H3('Cities to Highlight:', style = style_H3),
-                dcc.Dropdown(
+            html.H3('Cities to Highlight:', style = style_H3),
+            dcc.Dropdown(
                         id='drop3_b',
                         value=['Vancouver', 'Toronto'], 
                         options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True),
-                html.Iframe(
+            html.Iframe(
                     id='plot1',
                     style = style_plot1)], 
             style={"height": "10%"})
