@@ -76,7 +76,9 @@ colors = {
     'background_dropdown': '#fff3d9',
     'H1':'#bd0005',
     'H2':'#dd431f',
-    'H3':'#bd0005'
+    'H3':'#bd0005',
+    'light':'#FF8B68',
+    'teal':'#00bdb8'
 }
 
 style_dropdown = {'width': '100%', 'font-family': 'arial', 
@@ -291,8 +293,8 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     alt.X(drop1_chosen, title='Cost of '+new_name_dic[drop1_chosen], axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
-                              alt.value('red'),
-                              alt.value('steelblue')),
+                              alt.value(colors['teal']),
+                              alt.value(colors['H2'])),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html(), prov_cities
 
@@ -319,8 +321,8 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, drop_c):
         x= alt.X(drop_a, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_a]),
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_b]),
         color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_c),
-                              alt.value('red'),
-                              alt.value('steelblue')),
+                              alt.value('teal'),
+                              alt.value(colors['H2'])),
         tooltip=['city','province', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
