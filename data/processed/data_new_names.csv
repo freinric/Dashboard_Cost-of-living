@@ -1,0 +1,61 @@
+old_name,new_name
+city,City
+country,Country
+province,province
+population,population
+meal_cheap,Cheap Meal
+meal_mid,Average Meal for 2
+meal_mcd,Fast Food Meal
+r_beer_dom,Domestic Beer (R)
+r_beer_imp,Imported Beer (R)
+r_cappuccino,Cappucino (R)
+r_coke,Coke (R)
+r_water,Water (R)
+milk_1L,Milk (1L)
+bread_white,White Bread
+rice_1kg,Rice (1kg)
+eggs_doz,Eggs (dozen)
+cheese_local_1kg,Local Cheese (1kg)
+chicken_fillet_1kg,Chicken (1kg)
+beef_round_1kg,Beef Round (1kg)
+apple_1kg,Apple (1kg)
+banana_1kg,Banana (1kg)
+orange_1kg,Orange (1kg)
+tomato_1kg,Tomato (1kg)
+potato_1kg,Potato (1kg)
+onion_1kg,Onion (1kg)
+lettuce,Lettuce Head
+water_1.5L,Water Bottle (1.5L)
+winebottle_mid,Average Wine Bottle
+beer_dom,Domestic Beer
+beer_imp,Imported Beer
+cigarettes_20,Cigarettes
+ticket,Transportation
+ticket_month,Transportation (month)
+taxi_start,Taxi Start Cost
+taxi_1km,Taxi 1km Cost
+taxi_1hrwait,Taxi 1hr Wait
+gas_1L,Gas (1L)
+vw_golf,Volkswagen Golf
+toyota_corolla,Toyota Corolla
+basic,Basic Utilities
+mobile_1min,Mobile Calling (1 min)
+internet,Home Internet
+gym_month,Gym (monthly)
+tennis_rent,Tennis Court Rental
+cinema,Movie Ticket
+preschool,Preschool (monthly)
+primary_school,Primary Sch (year)
+jeans,Jeans
+summer_dress,Summer Dress
+shoes_running,Running Shoes
+shoes_business,Business Shoes
+bed1_centre,Apartment City (1 bed)
+bed1_out,Apartment Outside (1 bed)
+bed3_centre,Apartment City (3 bed)
+bed3_out,Apartment Outside (3 bed)
+buy_centre,Apartment City (/sq m)
+buy_out,Apartment Outside (/sq m)
+salary,Monthly Net Salary
+mortgage,Mortgage Interest Rate
+data_quality,Data Quality
