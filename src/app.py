@@ -46,7 +46,7 @@ for key in old:
 # now the new names are stored in the dictionary titled new_name_dict
 
 # dropdown options
-drop_options = [{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]]
+newoptions = [{'label': new_name_dic[col], 'value': col} for col in df.columns[2:57]]
 
 
 ### CHECKBOX CATEGORY FUNCTION
@@ -100,7 +100,7 @@ style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
 
 
 
-
+### APP LAYOUT ###
 #------------------------------------------------------------------------------
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -177,8 +177,8 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id='drop1',
                     placeholder="Variables",
-                    options=drop_options, # only including actual variables
-                    value=drop_options[0]['value'],  # set default as first in array
+                    options=newoptions, # only including actual variables
+                    value=newoptions[0]['value'],  # set default as first in array
                     style = style_dropdown),
                     ], 
                     style = {'display': 'flex'}),
@@ -197,14 +197,14 @@ app.layout = dbc.Container([
             dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
                      dcc.Dropdown(
                                 id='drop2_a',
-                                options=drop_options, # only including actual variables
-                                value=drop_options[0]['value'],  # set default as first in array 
+                                options=newoptions, # only including actual variables
+                                value=newoptions[0]['value'],  # set default as first in array 
                          style = style_dropdown),
                      html.H3('and ', style  = {'color': colors['H3']}),
                     dcc.Dropdown(
                         id='drop2_b',
-                        options=drop_options, # only including actual variables
-                        value=drop_options[1]['value'],  # set default as second in array 
+                        options=newoptions, # only including actual variables
+                        value=newoptions[1]['value'],  # set default as second in array 
                         style =style_dropdown)], 
             style={'display':'flex'}),
             html.Iframe(
@@ -228,7 +228,7 @@ app.layout = dbc.Container([
 
 ### CALLBACK GRAPHS AND CHECKBOXES ###
 
-### CHECKBOXES ###
+### PROVINCE CHECKBOXES ###
 @app.callback(
         Output("prov_checklist", "value"),
         Output("all_checklist", "value"),
@@ -251,6 +251,16 @@ def sync_checklists(prov_chosen, all_chosen):
 def update_output(value):
     return 'You have selected cities with population between {} and {}'.format(value[0], value[1])
 
+### CATEGORY CHECKBOXES ###
+@app.callback(
+        Output("drop1", "value"),
+        Output("drop2_a", "value"),
+        Output("drop2_b", "value"),
+        Input("category_checklist", "value"),
+)
+def update_dropdowns(categories):
+    newoptions = [{'label': new_name_dic[col], 'value': col} for col in col_filter(categories)[4:]]
+    return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value']
 
 
 ### PLOT 1 ###
