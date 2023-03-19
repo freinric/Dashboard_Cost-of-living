@@ -83,7 +83,7 @@ colors = {
 
 style_dropdown = {'width': '100%', 'font-family': 'arial', 
                   "font-size": "1.1em", "background-color": colors['background_dropdown'], 
-                  'font-weight': 'bold'}
+                  'font-weight': 'bold', 'border':'0px'}
 
 # Title
 style_H1 = {'textAlign': 'center', 'color': colors['H1']}
