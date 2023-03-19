@@ -287,7 +287,7 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
 
     barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
-    alt.X(drop1_chosen, title='Cost of '+drop1_chosen, axis=alt.Axis(orient='top',format='$.0f')),
+    alt.X(drop1_chosen, title='Cost of '+new_name_dic[drop1_chosen], axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
                               alt.value('red'),
@@ -315,8 +315,8 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
 
     # plot chart
     chart = alt.Chart(dff).mark_circle().encode(
-        x= alt.X(drop_a, axis=alt.Axis(format='$.0f')),
-        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f')),
+        x= alt.X(drop_a, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_a]),
+        y=alt.Y(drop_b, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_b]),
         tooltip=['city','province', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
