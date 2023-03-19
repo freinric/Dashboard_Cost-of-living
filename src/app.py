@@ -147,7 +147,8 @@ app.layout = dbc.Container([
                                    2000000: '2M',
                                    2500000: '2.5M',
                                    3000000: '3M'},
-                            value=[0,2800000]),
+                            value=[0,2800000],
+                            tooltip={"placement": "bottom", "always_visible": False}),
                        html.Div(id='slider-output-container'),
            html.Br(),
            
