@@ -274,9 +274,8 @@ def update_dropdowns(categories):
         Input('population','value'),
         Input('drop1','value'),
         Input('drop3_b', 'value'),
-        Input('category_checklist', 'value'),
 )
-def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categories):
+def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
@@ -303,9 +302,9 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b, categorie
         Input('population','value'),
         Input('drop2_a', 'value'),
         Input('drop2_b', 'value'),
-        Input('category_checklist', 'value'),
+        Input('drop3_b', 'value'),
 )
-def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
+def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, drop_c):
     # filtering df
     popmin = population_chosen[0]
     popmax = population_chosen[1]
@@ -317,6 +316,9 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, categories):
     chart = alt.Chart(dff).mark_circle(size=75).encode(
         x= alt.X(drop_a, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_a]),
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_b]),
+        color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_c),
+                              alt.value('red'),
+                              alt.value('steelblue')),
         tooltip=['city','province', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
