@@ -86,6 +86,7 @@ style_H2 = {'textAlign': 'center', 'color': colors['H2']} # Subtitle
 style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%'} # For card
 style_H3 = {'color': colors['H3'], 'width': '100%'} # For Charts Title
 
+# style={'overflowY': 'scroll', 'height': 500}
 style_plot1 = {'border-width': '0', 'width': '100%', 'height': '970px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
 style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
@@ -201,7 +202,7 @@ app.layout = dbc.Container([
                     value=newoptions[0]['value'],  # set default as first in array
                     style = style_dropdown),
                     ], 
-                    style = {'display': 'flex'}),
+                style = {'display': 'flex'}),
                 html.H3('Cities to Highlight:', style = style_H3),
                 dcc.Dropdown(
                         id='drop3_b',
@@ -212,7 +213,9 @@ app.layout = dbc.Container([
                     style = style_plot1)], 
             style={"height": "10%"})
         ])
-])
+        
+], 
+    fluid=True)
 
 #------------------------------------------------------------------------------
 ### CALLBACK GRAPHS AND CHECKBOXES ###
