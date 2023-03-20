@@ -1,4 +1,4 @@
-# Welcome to the Cost of living Dashboard!
+# Welcome to the Cost of Living Dashboard!
 
 Pleae find our app on Heroku - [Cost of living Dashboard](https://cost-of-living.herokuapp.com/)
 
