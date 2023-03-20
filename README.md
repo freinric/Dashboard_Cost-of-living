@@ -1,6 +1,6 @@
 # Welcome to the Cost of living Dashboard!
 
-Pleae find our app on Heroku: [Cost-of-living_Dashboard](https://cost-of-living.herokuapp.com/)
+Pleae find our app on Heroku - [Cost of living Dashboard](https://cost-of-living.herokuapp.com/)
 
 ## Who is this dashboard for?
 
