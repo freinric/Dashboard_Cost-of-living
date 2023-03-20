@@ -101,6 +101,9 @@ style_descbox = {'border':'1px solid #d3d3d3', 'background-color':colors['backgr
 # filters box
 style_filterbox = {'border': '1px solid #d3d3d3'}
 
+# For notes
+style_Note = {'textAlign': 'left', 'color': colors['H2']} 
+
 # style={'overflowY': 'scroll', 'height': 500}
 style_plot1 = {'border-width': '0', 'width': '100%', 'height': '800px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
@@ -118,7 +121,7 @@ app.layout = dbc.Container([
         dbc.Col([
             html.Div([html.H1('Where do you want to live?', style = style_H1), 
 #                     html.H3('Cost of Living Dashboard', style = style_H2),
-                    html.P('Description Placeholder: Selecting different provinces, population ranges, and categories of interest to explore the costs of living in Canada can guide you to places within your budget.', style=style_H2)],
+                    html.P('Selecting different provinces, population ranges, and categories of interest to explore the costs of living in Canada can guide you to places within your budget.', style=style_H2)],
                     style=style_descbox),
 
             html.Div([
@@ -176,7 +179,19 @@ app.layout = dbc.Container([
                     labelClassName='my_box_label', 
                     inputStyle={"margin-right": "3px", "margin-left":"20px"},         
                 )],
-                style=style_filterbox)], 
+                style=style_filterbox),
+            
+            ### Mention the sources
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.P('The data was collected in Dec 2022.', style=style_Note),
+            html.P('The original costs are in USD, we use the FX rate 1.38 to convert them to CAD.', style=style_Note),
+            html.P('Our data resource is Kaggle, please find the link bellow.', style=style_Note),
+            dbc.NavItem(dbc.NavLink("Kaggle Link", href="https://www.kaggle.com/datasets/mvieira101/global-cost-of-living?select=cost-of-living_v2.csv")),
+            html.P('The original data is crowdsourced from Numbeo, please find the link bellow.', style=style_Note),
+            dbc.NavItem(dbc.NavLink("Numbeo Link", href="https://www.numbeo.com/, terms of use are to link back to them"))
+            ],
                             md = 3),
         
         dbc.Col([
