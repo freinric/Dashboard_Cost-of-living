@@ -22,11 +22,11 @@ import dash_bootstrap_components as dbc
 #------------------------------------------------------------------------------
 # DEFINING
 
-df = pd.read_csv("data/processed/data.csv")  
+df = pd.read_csv("../data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
 ## data for map
-canada_province = json.load(open("data/processed/georef-canada-province@public.geojson", 'r'))
+canada_province = json.load(open("../data/processed/georef-canada-province@public.geojson", 'r'))
 
 # modify geojson issue
 for feature in canada_province["features"]:
@@ -34,7 +34,7 @@ for feature in canada_province["features"]:
 data_geojson = alt.InlineData(values=canada_province, format=alt.DataFormat(property='features',type='json'))
 
 # import new names
-new_names = pd.read_csv("data/processed/data_new_names.csv", header = 0)
+new_names = pd.read_csv("../data/processed/data_new_names.csv", header = 0)
 # df to list
 old = new_names.old_name.values.tolist()
 new  = new_names.new_name.values.tolist()
