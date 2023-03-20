@@ -6,10 +6,6 @@ import dash
 from dash import Dash, dcc, html, Input, Output, State, callback_context
 import dash_bootstrap_components as dbc
 
-# POSSIBLE LINKS FOR TOPJSON MAP
-# https://gist.github.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44?short_path=2b4dce3
-# https://gist.github.com/jdylanmc/a3fd5ca8c960eaa4b4354445b4480dad?short_path=9a3cad4
-
 #------------------------------------------------------------------------------
 
 ### TABLE OF CONTENTS ###
@@ -21,7 +17,7 @@ import dash_bootstrap_components as dbc
 
 #------------------------------------------------------------------------------
 # DEFINING
-
+#------------------------------------------------------------------------------
 df = pd.read_csv("data/processed/data.csv")  
 provs = sorted([x for x in df['province'].unique()])
 
@@ -72,51 +68,63 @@ def col_filter(cat_value):
         if i == 'home':
             cols = cols + list(df.columns[49:57])
     return cols
-
-
+#------------------------------------------------------------------------------
+### STYLES
+#------------------------------------------------------------------------------
 colors = {
-    'background': 'dark',
-    'background_dropdown': '#DDDDDD',
-    'H1':'#00BBFF',
-    'H2':'#7FDBFF',
-    'H3':'#005AB5'
+    'background': '#fff3d9',
+    'background_dropdown': '#fff3d9',
+    'H1':'#bd0005',
+    'H2':'#dd431f',
+    'H3':'#bd0005',
+    'light':'#FF8B68',
+    'teal':'#00bdb8'
 }
 
+style_dropdown = {'width': '230px', 'font-family': 'arial', 
+                  "font-size": "1.1em", "background-color": colors['background_dropdown'], 
+                  'font-weight': 'bold', 'border':'0px'}
+style_dropdown_c = {'width': '100%', 'font-family': 'arial', 
+                  "font-size": "1.1em", "background-color": colors['background_dropdown'], 
+                  'font-weight': 'bold', 'border':'0px'}
 
-style_dropdown = {'width': '100%', 'font-family': 'arial', "font-size": "1.1em", "background-color": colors['background_dropdown'], 'font-weight': 'bold'}
+# Title
+style_H1 = {'textAlign': 'center', 'color': colors['H1']}
+# Subtitle
+style_H2 = {'textAlign': 'center', 'color': colors['H2']} 
+# For card
+style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%'} 
+# For Charts Title
+style_H3 = {'color': colors['H3'], 'width': '100%'} 
+# description box
+style_descbox = {'border':'1px solid #d3d3d3', 'background-color':colors['background']}
+# filters box
+style_filterbox = {'border': '1px solid #d3d3d3'}
 
-style_H1 = {'textAlign': 'center', 'color': colors['H1']} # Title
-style_H2 = {'textAlign': 'center', 'color': colors['H2']} # Subtitle
-style_H3_c = {'textAlign': 'center', 'color': colors['H3'], 'width': '100%'} # For card
-style_H3 = {'color': colors['H3'], 'width': '100%'} # For Charts Title
-
-style_plot1 = {'border-width': '0', 'width': '100%', 'height': '970px'}
+# style={'overflowY': 'scroll', 'height': 500}
+style_plot1 = {'border-width': '0', 'width': '100%', 'height': '800px'}
 style_plot2 = {'border-width': '0', 'width': '100%', 'height': '400px'}
-style_plot3 = {'border-width': '0', 'width': '100%', 'height': '400px'}
+style_plot3 = {'border-width': '0', 'width': '100%', 'height': '350px'}
 
-style_card = {'border': '1px solid #d3d3d3', 'border-radius': '10px'}
+style_card = {'border': '1px solid #d3d3d3'}
 
 #------------------------------------------------------------------------------
-
-
-
-
-
 ### APP LAYOUT ###
 #------------------------------------------------------------------------------
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, title='Cost of Living Dashboard', external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
        dbc.Row([
         dbc.Col([
-            dbc.Card(
-                dbc.CardBody([html.H1('Where do you want to live?', style = style_H1), 
-                              html.H3('Cost of Living Dashboard', style = style_H2)]),
-                color = colors['background']),
+            html.Div([html.H1('Where do you want to live?', style = style_H1), 
+                    html.H3('Cost of Living Dashboard', style = style_H2),
+                    html.P('Description Placeholder: ;lkj;lasd fikdjfiwodaji ijwljd i', style=style_H2)],
+                    style=style_descbox),
+
+            html.Div([
             html.Br(),
-            
-            ### CHECKLIST ###
-            html.H3("Select the Province: ", style = style_H3_c),
+            ### CHECKLIST PROVINCES###
+            html.H3("Select Provinces: ", style = style_H3_c),
             dcc.Checklist(['Select All'],['Select All'],id="all_checklist"),
             dcc.Checklist(
                     id='prov_checklist',                
@@ -142,12 +150,13 @@ app.layout = dbc.Container([
                                    2000000: '2M',
                                    2500000: '2.5M',
                                    3000000: '3M'},
-                            value=[0,2800000]),
+                            value=[0,2800000],
+                            tooltip={"placement": "bottom", "always_visible": False}),
                        html.Div(id='slider-output-container'),
            html.Br(),
            
            ### CATEGORY CHECKLIST ###
-            html.H3("Select Categories: ", style = style_H3_c),
+            html.H3("Select Dropdown Variable Categories: ", style = style_H3_c),
             dcc.Checklist(
                     id='category_checklist',                
                     options=[{'label': 'Restaurant', 'value': 'restaurant'},
@@ -159,22 +168,50 @@ app.layout = dbc.Container([
                              {'label': 'Clothing', 'value': 'clothing'},
                              {'label': 'Living', 'value': 'home'},
                        ],
-                       value=['restaurant', 'market', 'transportation', 'utilities', 'leisure', 'childcare',
-                             'clothing', 'home'],    # values chosen by default
+                       value=['restaurant'],    # values chosen by default
 
                     ### STYLES IN CHECKLIST ###
                     className='my_box_container', 
                     inputClassName='my_box_input',         
                     labelClassName='my_box_label', 
                     inputStyle={"margin-right": "3px", "margin-left":"20px"},         
-                ),], 
-                            md = 3, style = style_card),
+                )],
+                style=style_filterbox)], 
+                            md = 3),
+        
+        dbc.Col([
+            ### PLOT 3 LAYOUT ###
+            dbc.Col([html.H3('Map of Canada: Province Region', style = style_H3)],
+
+                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
+            html.Iframe(
+                id='plot_map',
+                style=style_plot3),
             html.Br(),
-    
-        ### PLOT 1 LAYOUT###    
+            ### PLOT 2 LAYOUT###  
+            dbc.Col([html.H3('Compare: ', style = {'color': colors['H3']})], 
+                    style={'display':'flex'}),
+            dbc.Col([
+                     dcc.Dropdown(
+                                id='drop2_a',
+                                options=newoptions, # only including actual variables
+                                value=newoptions[0]['value'],  # set default as first in array 
+                         style = style_dropdown),
+                    html.H3('and ', style  = {'color': colors['H3']}),
+                     dcc.Dropdown(
+                        id='drop2_b',
+                        options=newoptions, # only including actual variables
+                        value=newoptions[1]['value'],  # set default as second in array 
+                        style =style_dropdown)], 
+                    style={'display':'flex'}),
+            html.Iframe(
+                id='plot2',
+                style = style_plot2)
+        ]),  
+        ### PLOT 1 LAYOUT ###
         dbc.Col([
             dbc.Col([
-                html.H3('Rank Cities by', style = style_H3), 
+                html.H3('Rank Cities by:', style = style_H3), 
                 ### DROPDOWN 1 ###
                 dcc.Dropdown(
                     id='drop1',
@@ -183,53 +220,25 @@ app.layout = dbc.Container([
                     value=newoptions[0]['value'],  # set default as first in array
                     style = style_dropdown),
                     ], 
-                    style = {'display': 'flex'}),
-                html.H3('Cities to Highlight:', style = style_H3),
-                dcc.Dropdown(
+                style = {'display': 'flex'}),
+            html.H3('Cities to Highlight:', style = style_H3),
+            dcc.Dropdown(
                         id='drop3_b',
                         value=['Vancouver', 'Toronto'], 
-                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True),
-                html.Iframe(
+                        options=[{'label': cities, 'value': cities} for cities in df['city']], multi = True,
+                        style=style_dropdown_c),
+            html.Iframe(
                     id='plot1',
                     style = style_plot1)], 
-            style={"height": "10%"}),
-
-        ### PLOT 2  LAYOUT ###
-        dbc.Col([
-            dbc.Col([html.H3('Compare ', style = {'color': colors['H3']}),
-                     dcc.Dropdown(
-                                id='drop2_a',
-                                options=newoptions, # only including actual variables
-                                value=newoptions[0]['value'],  # set default as first in array 
-                         style = style_dropdown),
-                     html.H3('and ', style  = {'color': colors['H3']}),
-                    dcc.Dropdown(
-                        id='drop2_b',
-                        options=newoptions, # only including actual variables
-                        value=newoptions[1]['value'],  # set default as second in array 
-                        style =style_dropdown)], 
-            style={'display':'flex'}),
-            html.Iframe(
-                id='plot2',
-                style = style_plot2),
-            html.Br(),
-            
-            ### PLOT 3 LAYOUT ###
-
-            dbc.Col([html.H3('Map of Canada: Province Region', style = style_H3)],
-
-                    style={'width': '100%', 'font-family': 'arial', "font-size": "1.1em", 'font-weight': 'bold'}),
-            html.Iframe(
-                id='plot_map',
-                style=style_plot3)
+            style={"height": "10%", 'border': '1px solid #d3d3d3'})
         ])
-        ])
-])
+        
+], 
+    fluid=True)
 
 #------------------------------------------------------------------------------
-
 ### CALLBACK GRAPHS AND CHECKBOXES ###
-
+#------------------------------------------------------------------------------
 ### PROVINCE CHECKBOXES ###
 @app.callback(
         Output("prov_checklist", "value"),
@@ -268,7 +277,7 @@ def update_dropdowns(categories):
     return newoptions[0]['value'],newoptions[0]['value'],newoptions[1]['value'], newoptions, newoptions, newoptions
 
 
-### PLOT 1 ###
+### PLOT 1: BARGRAPH ###
 @app.callback(
         Output('plot1', 'srcDoc'),
         Output('drop3_b', 'options'),
@@ -287,17 +296,17 @@ def plot_altair1(prov_chosen, population_chosen, drop1_chosen, drop_b):
     # setting filtered dropdown options
     prov_cities = [{'label': cities, 'value': cities} for cities in dff['city']]
 
-    barchart = alt.Chart(dff[-pd.isnull(dff[drop1_chosen])]).mark_bar().encode(
+    barchart = alt.Chart(dff[dff[drop1_chosen]>0]).mark_bar().encode(
     alt.X(drop1_chosen, title='Cost of '+new_name_dic[drop1_chosen], axis=alt.Axis(orient='top',format='$.0f')),
     alt.Y('city', sort='x', title=""),
     color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_b),
-                              alt.value('red'),
-                              alt.value('steelblue')),
+                              alt.value(colors['teal']),
+                              alt.value(colors['H2'])),
     tooltip=[drop1_chosen,'province']).configure_axis(labelFontSize = 16, titleFontSize=20)
     return barchart.to_html(), prov_cities
 
 
-### PLOT 2 ###
+### PLOT 2: SCATTERPLOT ###
 @app.callback(
         Output('plot2', 'srcDoc'),
         Input('prov_checklist', 'value'),
@@ -315,18 +324,18 @@ def plot_altair2(prov_chosen, population_chosen, drop_a, drop_b, drop_c):
 
 
     # plot chart
-    chart = alt.Chart(dff).mark_circle(size=75).encode(
+    chart = alt.Chart(dff[(dff[drop_a]>0)&dff[drop_b]>0]).mark_circle(size=75).encode(
         x= alt.X(drop_a, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_a]),
         y=alt.Y(drop_b, axis=alt.Axis(format='$.0f'), title=new_name_dic[drop_b]),
         color = alt.condition(alt.FieldOneOfPredicate(field='city', oneOf=drop_c),
-                              alt.value('red'),
-                              alt.value('steelblue')),
+                              alt.value('teal'),
+                              alt.value(colors['H2'])),
         tooltip=['city','province', drop_a, drop_b]
     ).configure_axis(labelFontSize = 16, titleFontSize=20)
     return chart.to_html()
 
 
-### PLOT 4 Canada Map ###
+### PLOT 3: Canada Map ###
 @app.callback(
         Output('plot_map', 'srcDoc'),
         Input('prov_checklist', 'value')
