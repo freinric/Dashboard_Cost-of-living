@@ -14,7 +14,7 @@ To help contribute to this dashboard, you can clone this GitHub repo and contrib
 
 ## Dashboard Details
 
-The app's landing page consists of a sidebar with the name and short description of the dashboard, as well as features to filter the information used in the main graphs. A user may filter by province, city population, and by category. The first image is a map, which will be coloured based on the provinces selected in the sidebar. The next feature is a scatterplot that is built from user's choice of two variables (through dropdowns). Here, the user can compare the relative costs and see which city the data belongs to with the tooltip. The last feature located on the right side is a barchart illustrating the cost of an item, chosen by the user through a dropdown menu, by city and sorted in ascending order. A scrollbar is avaiable to scroll through all values if necessary.
+The app's landing page consists of a sidebar with the name and short description of the dashboard, as well as features to filter the information used in the main graphs. A user may filter by province, city population, and by category through a series of checkboxes and sliders. The first image is a map, which will be coloured based on the provinces selected in the sidebar. The next feature is a scatterplot that is built from user's choice of two variables (through dropdowns). Here, the user can compare the relative costs and see which city the data belongs to with the tooltip. The last feature located on the right side is a barchart illustrating the cost of an item, chosen by the user through a dropdown menu, by city and sorted in ascending order. A scrollbar is avaiable to scroll through all values if necessary.
 
 ## Credits
 
