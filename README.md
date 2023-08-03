@@ -1,6 +1,6 @@
-# Welcome to the Cost of Living Dashboard!
+# Cost of Living Dashboard
 
-Pleae find our app on Heroku - [Cost of living Dashboard](https://cost-of-living.herokuapp.com/)
+This is the repository for our UBC MDS DATA551 (Data Visualization II) group project. The dashboard is no longer live, but was found [here](https://cost-of-living.herokuapp.com/).
 
 ## Who is this dashboard for?
 
